@@ -1,4 +1,5 @@
 import fastf1
+import pandas as pd
 from fastf1 import utils
 from utils import enable_cache, load_race, get_fastest_lap, plot_comparison, get_last_lap
 
@@ -39,3 +40,19 @@ def compare_last():
     delta_time, ref_tel, compare_tel = fastf1.utils.delta_time(d1_last_lap, d2_last_lap)
 
     plot_comparison(d1, d2, d1_telemetry, d2_telemetry, team_d1, team_d2, delta_time, ref_tel)
+
+
+def print_lap_times():
+    enable_cache()
+    session = load_race(2020, 'Austrian Grand Prix', 'R')
+    columns = ["Driver", "Position", "LapNumber", "LapTime", "Compound", "TyreLife"]
+    laps = session.laps[columns].to_numpy()
+
+    # Print column headers
+    print(columns)
+
+    # Print the 2D array
+    for lap in laps:
+        print(lap)
+
+    print("Done!")

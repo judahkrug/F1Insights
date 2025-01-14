@@ -22,6 +22,20 @@ def get_last_lap(race, driver):
     fastest_lap = laps.pick_laps(num_laps)
     return fastest_lap
 
+def get_average_laptimes(race, driver):
+    laps = race.laps.pick_drivers(driver)
+    laps = laps.dropna(subset=['LapTime'])  # Ignore laps with NaT LapTime
+    # TODO: Return 0 if the driver didn't finish the race
+
+    if len(laps) == 0:
+        return 0
+
+    total_time = sum(laps['LapTime'].dt.total_seconds())
+    average_time = total_time / len(laps)
+    return average_time
+
+
+
 def plot_comparison(d1, d2, d1_telemetry, d2_telemetry, team_d1, team_d2, delta_time, ref_tel):
     plot_size = [15, 15]
     plot_title = f"2020 Austrian Grand Prix - Race - {d1} VS {d2}"
