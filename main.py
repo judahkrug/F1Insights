@@ -17,22 +17,27 @@ def main():
             races.append(race_info)
 
     # Get a list of unique drivers
-    # TODO: Rewrite this function, it can be added into the below for race in races loop and only create a new driver row when a new driver is encountered
-    unique_drivers = set()
-    # for race in races:
-    #     session = load_race(year, race[0], 'R')
-    #     unique_drivers.update(session.drivers)
-    #     print (race[])
-    #     print(unique_drivers)
-    #     print()
+    # TODO: Rewrite this function, it can be added into the below for (race: races) loop and only create a new driver row when a new driver is encountered
+    unique_drivers = {}
+    for race in races:
+        session = load_race(year, race[0], 'R')
+        abbreviations = session.results.Abbreviation.values
+        full_names = session.results.FullName.values
+        for abbreviation, full_name in zip(abbreviations, full_names):
+            if abbreviation in unique_drivers and unique_drivers[abbreviation] != full_name:
+                raise ValueError(f"Conflicting full names for abbreviation {abbreviation}: {unique_drivers[abbreviation]} vs {full_name}")
+            unique_drivers[abbreviation] = full_name
+        # print(race[0])
+        # print(unique_drivers)
 
-    # Comment the above out if you'd like to loop through all drivers
-    unique_drivers = {'27', '14', '38', '63', '31', '2', '55', '1', '3', '77', '11', '16', '81', '50', '30', '4', '44', '10', '61', '18', '20', '22', '23', '43', '24'}
-
-    unique_drivers = list(unique_drivers)
+    # Comment out the above if you'd like to hardcode the drivers
+    # unique_drivers = {'27', '14', '38', '63', '31', '2', '55', '1', '3', '77', '11', '16', '81', '50', '30', '4', '44', '10', '61', '18', '20', '22', '23', '43', '24'}
+    # unique_drivers = {'STR', 'OCO', 'ALO', 'ALB', 'HUL', 'PIA', 'LEC', 'VER', 'MAG', 'DOO', 'TSU', 'BEA', 'ZHO', 'SAI', 'NOR', 'RIC', 'COL', 'BOT', 'SAR', 'LAW', 'GAS', 'HAM', 'PER', 'RUS'}
+    # drivers = ['VER', 'PER', 'SAI', 'LEC', 'RUS', 'NOR', 'HAM', 'PIA', 'ALO', 'STR', 'ZHO', 'MAG', 'RIC', 'TSU', 'ALB', 'HUL', 'OCO', 'GAS', 'BOT', 'SAR', 'BEA', 'COL', 'LAW', 'DOO']
+    drivers = list(unique_drivers.keys())
 
     # Initialize the 2D matrix
-    matrix = pd.DataFrame(index=unique_drivers, columns=[race[0] for race in races])
+    matrix = pd.DataFrame(index=drivers, columns=[race[0] for race in races])
 
     # Populate the matrix with average lap times
     for index, race in enumerate(races):
@@ -50,7 +55,7 @@ def main():
     matrix.to_csv('/Users/judahkrug/Desktop/average_lap_times.csv')
 
     # Populate missing values with expected % distance from the fastest driver
-    for driver in unique_drivers:
+    for driver in drivers:
         multipliers = []
 
         # Populate the multipliers
