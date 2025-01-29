@@ -16,12 +16,6 @@ def get_fastest_lap(race, driver):
     fastest_lap = laps.pick_fastest()
     return fastest_lap
 
-def get_last_lap(race, driver):
-    laps = race.laps.pick_drivers(driver)
-    num_laps = laps.shape[0]
-    fastest_lap = laps.pick_laps(num_laps)
-    return fastest_lap
-
 def get_average_laptimes(race, driver):
     laps = race.laps.pick_drivers(driver)
     laps = laps.dropna(subset=['LapTime'])  # Ignore laps with NaT LapTime
