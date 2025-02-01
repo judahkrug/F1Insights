@@ -1,20 +1,26 @@
 import fastf1
 import matplotlib
+import pandas as pd
+import numpy as np
 from matplotlib.pyplot import figure
 from fastf1 import plotting
 
+
 def enable_cache(cache_dir='cache'):
     fastf1.Cache.enable_cache(cache_dir)
+
 
 def load_race(year, grand_prix, session):
     race = fastf1.get_session(year, grand_prix, session)
     race.load()
     return race
 
+
 def get_fastest_lap(race, driver):
     laps = race.laps.pick_drivers(driver)
     fastest_lap = laps.pick_fastest()
     return fastest_lap
+
 
 def get_average_laptimes(race, driver):
     laps = race.laps.pick_drivers(driver)
@@ -28,6 +34,41 @@ def get_average_laptimes(race, driver):
     average_time = total_time / len(laps)
     return average_time
 
+
+def get_tire_multiplier(stintLaps):
+    if len(stintLaps) < 5:
+        return 0  # Not enough laps to calculate multiplier
+
+    first_lap = stintLaps[0][1]
+    last_lap = stintLaps[-1][1]
+
+    # Calculate the range for the first and last 30% of the stint
+    lap_range = (last_lap - first_lap) * 0.3
+
+    initial_laps = []
+    final_laps = []
+
+    for lap in stintLaps:
+        lap_time = lap[0].total_seconds()
+        if lap[1] <= first_lap + lap_range:
+            initial_laps.append(lap_time)
+        elif lap[1] >= last_lap - lap_range:
+            final_laps.append(lap_time)
+
+    initial_laps_avg = np.average(initial_laps)
+    final_laps_avg = np.average(final_laps)
+
+    if final_laps_avg == 0:
+        return 0  # Avoid division by zero
+
+    tire_multiplier = final_laps_avg / initial_laps_avg
+    return tire_multiplier
+
+
+def is_pit_lap(index, laps):
+    if pd.notnull(laps.PitInTime[index]) or pd.notnull(laps.PitOutTime[index]):
+        return True
+    return False
 
 
 def plot_comparison(d1, d2, d1_telemetry, d2_telemetry, team_d1, team_d2, delta_time, ref_tel):

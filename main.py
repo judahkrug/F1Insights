@@ -1,90 +1,67 @@
 import fastf1
+import numpy as np
 import pandas as pd
 
-from utils import enable_cache, load_race, get_average_laptimes
+from utils import enable_cache, load_race, get_tire_multiplier, is_pit_lap
 
 
 def main():
     enable_cache()
     year = 2024
-    events = fastf1.get_event_schedule(year)  # Get all events in year 2024
+    events = fastf1.get_event_schedule(year)
     races = []
+    tire_matrix = pd.DataFrame()
 
-    # Add each Race (Session 5 of weekend) to races
+    # Add each race (Session 5 of weekend) to races
     for i in range(events.shape[0]):
         if events['Session5'][i] == 'Race':
-            race_info = [events['OfficialEventName'][i], events['Country'][i], i]
+            race_info = (events['OfficialEventName'][i], events['Country'][i], i)
             races.append(race_info)
 
-    # Get a list of unique drivers
-    # TODO: Rewrite this function, it can be added into the below for (race: races) loop and only create a new driver row when a new driver is encountered
-    # unique_drivers = {}
-    # for race in races:
-    #     session = load_race(year, race[0], 'R')
-    #     abbreviations = session.results.Abbreviation.values
-    #     full_names = session.results.FullName.values
-    #     for abbreviation, full_name in zip(abbreviations, full_names):
-    #         if abbreviation in unique_drivers and unique_drivers[abbreviation] != full_name:
-    #             raise ValueError(f"Conflicting full names for abbreviation {abbreviation}: {unique_drivers[abbreviation]} vs {full_name}")
-    #         unique_drivers[abbreviation] = full_name
-
-    # Comment out the above if you'd like to hardcode the drivers
-    # unique_drivers = {'27', '14', '38', '63', '31', '2', '55', '1', '3', '77', '11', '16', '81', '50', '30', '4', '44', '10', '61', '18', '20', '22', '23', '43', '24'}
-    # unique_drivers = {'STR', 'OCO', 'ALO', 'ALB', 'HUL', 'PIA', 'LEC', 'VER', 'MAG', 'DOO', 'TSU', 'BEA', 'ZHO', 'SAI', 'NOR', 'RIC', 'COL', 'BOT', 'SAR', 'LAW', 'GAS', 'HAM', 'PER', 'RUS'}
-    drivers = ['VER', 'PER', 'SAI', 'LEC', 'RUS', 'NOR', 'HAM', 'PIA', 'ALO', 'STR', 'ZHO', 'MAG', 'RIC', 'TSU', 'ALB', 'HUL', 'OCO', 'GAS', 'BOT', 'SAR', 'BEA', 'COL', 'LAW', 'DOO']
-    # drivers = list(unique_drivers.keys())
-
-    # Initialize the 2D matrix
-    matrix = pd.DataFrame(index=drivers, columns=[race[0] for race in races])
-
-    # Populate Matrix with Tire Multipliers
-    for index, race in enumerate(races):
+    # Populate matrix with Tire Multipliers
+    for race in races:
         session = load_race(year, race[0], 'R')
+
+        # Add the race to the matrix if not already present
+        if race[0] not in tire_matrix.columns:
+            tire_matrix[race[0]] = pd.Series(dtype='float64')
 
         print(f"Loading race {race[2]} / {len(races)}")
         print("Loading " + race[0])
         print()
+
         for driver in session.results.Abbreviation.values:
+            # Add the driver to the matrix if not already present
+            if driver not in tire_matrix.index:
+                tire_matrix.loc[driver] = pd.Series(dtype='float64')
+
             tire_multipliers = []
+            stint_laps = []
             laps = session.laps.pick_drivers(driver)
-            stintLaps = []
 
-            # For each lap
-            for index, LapNumber in enumerate(laps.LapNumber):
-                stintNumber = laps.Stint[index]
+            # Remove drivers who completed < 75% the race
+            if laps.shape[0] < .75 * session.total_laps:
+                break
 
-                # TODO: Update below if statement to verify if (validLap)
-                if (LapNumber != 1):
-                    stintLaps.append(laps.LapTime[index])
+            # Populate tire_multipliers
+            for index, lapNumber in laps.LapNumber.items():
+                stint_number = laps.Stint[index]
 
-                if (index + 1  >= len(laps.Stint) or stintNumber != laps.Stint[index+1]):
-                    # TODO: Calculate tire_multiplier correctly below
-                    tire_multiplier = 1.05
-                    tire_multipliers.append(tire_multiplier)
-                    stintLaps.clear()
-            # TODO: Calculate average tire_multiplier and populate matrix
+                if lapNumber != 1 and not is_pit_lap(index, laps) and pd.notnull(laps.LapTime[index]):
+                    stint_laps.append((laps.LapTime[index], lapNumber))
 
+                if index + 1 not in laps.Stint or stint_number != laps.Stint[index + 1]:
+                    tire_multiplier = get_tire_multiplier(stint_laps)
+                    if tire_multiplier != 0:
+                        tire_multipliers.append(tire_multiplier)
+                    stint_laps.clear()
 
+            if len(tire_multipliers) >= 1:
+                avg_multiplier = np.average(tire_multipliers)
+                tire_matrix.at[driver, race[0]] = avg_multiplier
 
+    tire_matrix.to_csv('/Users/judahkrug/Desktop/tire_multipliers.csv')
 
-
-    #
-    #
-    # # Populate the matrix with average lap times
-    # for index, race in enumerate(races):
-    #     session = load_race(year, race[0], 'R')
-    #
-    #     print(f"Loading race {index + 1} / {len(races)}")
-    #     print("Loading " + race[0])
-    #     print()
-    #     for driver in session.drivers:
-    #         avg_laptime = get_average_laptimes(session, driver)
-    #         if avg_laptime != 0:
-    #             matrix.at[driver, race[0]] = avg_laptime
-    #
-    #
-    # matrix.to_csv('/Users/judahkrug/Desktop/average_lap_times.csv')
-    #
     # # Populate missing values with expected % distance from the fastest driver
     # for driver in drivers:
     #     multipliers = []
@@ -105,11 +82,9 @@ def main():
     #         if pd.isna(matrix.at[driver, race]):
     #             matrix.at[driver, race] = multiplier * matrix[race].min()
 
+    # # Print the matrix
+    # matrix.to_csv('/Users/judahkrug/Desktop/updated_lap_times.csv')
 
-
-
-    # Print the matrix
-    matrix.to_csv('/Users/judahkrug/Desktop/updated_lap_times.csv')
 
 if __name__ == "__main__":
     main()
