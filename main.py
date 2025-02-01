@@ -62,7 +62,7 @@ def main():
 
     tire_matrix.to_csv('/Users/judahkrug/Desktop/tire_multipliers.csv')
 
-    # Populate missing entries with average deviation from race best tire_multipliers
+    # Populate missing entries with average deviation from race average tire_multipliers
     for driver in tire_matrix.index:
         deviations = []
 
@@ -70,8 +70,8 @@ def main():
         for race in tire_matrix.columns:
             driver_tire_multiplier = tire_matrix.at[driver, race]
             if pd.notna(driver_tire_multiplier):
-                best_tire_multiplier = tire_matrix[race].min()
-                deviations.append(driver_tire_multiplier / best_tire_multiplier)
+                race_average_tire_multiplier = tire_matrix[race].mean()
+                deviations.append(driver_tire_multiplier / race_average_tire_multiplier)
 
         # Fill in the missing entries
         if len(deviations) == 0:
