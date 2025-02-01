@@ -62,28 +62,26 @@ def main():
 
     tire_matrix.to_csv('/Users/judahkrug/Desktop/tire_multipliers.csv')
 
-    # # Populate missing values with expected % distance from the fastest driver
-    # for driver in drivers:
-    #     multipliers = []
-    #
-    #     # Populate the multipliers
-    #     for race in matrix.columns:
-    #         driver_laptime = matrix.at[driver, race]
-    #         if pd.notna(driver_laptime):
-    #             fastest_laptime = matrix[race].min()
-    #             multipliers.append(driver_laptime / fastest_laptime)
-    #
-    #     # Fill in the missing entries with multiplier
-    #     if len(multipliers) == 0:
-    #         break
-    #     multiplier = sum(multipliers) / len(multipliers)
-    #     print("Driver: " + driver + " Multiplier: " + str(multiplier))
-    #     for race in matrix.columns:
-    #         if pd.isna(matrix.at[driver, race]):
-    #             matrix.at[driver, race] = multiplier * matrix[race].min()
+    # Populate missing entries with average deviation from race best tire_multipliers
+    for driver in tire_matrix.index:
+        deviations = []
 
-    # # Print the matrix
-    # matrix.to_csv('/Users/judahkrug/Desktop/updated_lap_times.csv')
+        # Populate the multipliers
+        for race in tire_matrix.columns:
+            driver_tire_multiplier = tire_matrix.at[driver, race]
+            if pd.notna(driver_tire_multiplier):
+                best_tire_multiplier = tire_matrix[race].min()
+                deviations.append(driver_tire_multiplier / best_tire_multiplier)
+
+        # Fill in the missing entries
+        if len(deviations) == 0:
+            break
+        average_deviation = sum(deviations) / len(deviations)
+        for race in tire_matrix.columns:
+            if pd.isna(tire_matrix.at[driver, race]):
+                tire_matrix.at[driver, race] = average_deviation * tire_matrix[race].min()
+
+    tire_matrix.to_csv('/Users/judahkrug/Desktop/updated_tire_multipliers.csv')
 
 
 if __name__ == "__main__":
