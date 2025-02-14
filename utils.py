@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from matplotlib.pyplot import figure
 from fastf1 import plotting
+from fastf1.ergast import Ergast
 
 
 def enable_cache(cache_dir='cache'):
@@ -69,6 +70,21 @@ def is_pit_lap(index, laps):
     if pd.notnull(laps.PitInTime[index]) or pd.notnull(laps.PitOutTime[index]):
         return True
     return False
+
+def add_points_to_matrix(tire_matrix):
+    ergast = Ergast()
+    standings = ergast.get_driver_standings(season=2024, round="last", result_type = "raw")
+    standings = standings[0]['DriverStandings']
+
+    driver_points = {}
+
+    for entry in standings:
+        driver_code = entry['Driver']['code']
+        points = entry['points']
+        driver_points[driver_code] = points
+
+    tire_matrix['Points'] = tire_matrix.index.map(driver_points)
+    print(tire_matrix.corr()['Points'])
 
 
 def plot_comparison(d1, d2, d1_telemetry, d2_telemetry, team_d1, team_d2, delta_time, ref_tel):

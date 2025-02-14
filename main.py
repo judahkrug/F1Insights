@@ -2,7 +2,7 @@ import fastf1
 import numpy as np
 import pandas as pd
 
-from utils import enable_cache, load_race, get_tire_multiplier, is_pit_lap
+from utils import enable_cache, load_race, get_tire_multiplier, is_pit_lap, add_points_to_matrix
 
 
 def main():
@@ -21,6 +21,10 @@ def main():
     # Populate matrix with Tire Multipliers
     for race in races:
         session = load_race(year, race[0], 'R')
+
+        # Use for testing
+        # if race[2] == 5:
+        #     break
 
         # Add the race to the matrix if not already present
         if race[0] not in tire_matrix.columns:
@@ -82,6 +86,12 @@ def main():
                 tire_matrix.at[driver, race] = average_deviation * tire_matrix[race].min()
 
     tire_matrix.to_csv('/Users/judahkrug/Desktop/updated_tire_multipliers.csv')
+
+    add_points_to_matrix(tire_matrix)
+
+    tire_matrix.to_csv('/Users/judahkrug/Desktop/multipliers_with_points.csv', index=False)
+
+    print("Done")
 
 
 if __name__ == "__main__":
