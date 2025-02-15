@@ -16,6 +16,14 @@ def load_race(year, grand_prix, session):
     race.load()
     return race
 
+def get_races(year):
+    events = fastf1.get_event_schedule(year)
+    races = []
+    for i in range(events.shape[0]):
+        if events['Session5'][i] == 'Race':
+            race_info = (events['OfficialEventName'][i], events['Country'][i], i)
+            races.append(race_info)
+    return races
 
 def get_fastest_lap(race, driver):
     laps = race.laps.pick_drivers(driver)
@@ -36,34 +44,27 @@ def get_average_laptimes(race, driver):
     return average_time
 
 
-def get_tire_multiplier(stintLaps):
-    if len(stintLaps) < 5:
-        return 0  # Not enough laps to calculate multiplier
+def populate_missing_entries(matrix, year):
+    for driver in matrix.index:
+        deviations = []
 
-    first_lap = stintLaps[0][1]
-    last_lap = stintLaps[-1][1]
+        # Populate the multipliers
+        for race in matrix.columns:
+            driver_metric = matrix.at[driver, race]
+            if pd.notna(driver_metric):
+                race_average_metric = matrix[race].mean()
+                deviations.append(driver_metric / race_average_metric)
 
-    # Calculate the range for the first and last 30% of the stint
-    lap_range = (last_lap - first_lap) * 0.3
+        # Fill in the missing entries
+        if len(deviations) == 0:
+            continue
+        average_deviation = sum(deviations) / len(deviations)
+        for race in matrix.columns:
+            if pd.isna(matrix.at[driver, race]):
+                matrix.at[driver, race] = average_deviation * matrix[race].min()
 
-    initial_laps = []
-    final_laps = []
-
-    for lap in stintLaps:
-        lap_time = lap[0].total_seconds()
-        if lap[1] <= first_lap + lap_range:
-            initial_laps.append(lap_time)
-        elif lap[1] >= last_lap - lap_range:
-            final_laps.append(lap_time)
-
-    initial_laps_avg = np.average(initial_laps)
-    final_laps_avg = np.average(final_laps)
-
-    if final_laps_avg == 0:
-        return 0  # Avoid division by zero
-
-    tire_multiplier = final_laps_avg / initial_laps_avg
-    return tire_multiplier
+    matrix.to_csv('/Users/judahkrug/Desktop/' + str(year) + '_tire_multipliers.csv')
+    return matrix
 
 
 def is_pit_lap(index, laps):
@@ -71,7 +72,7 @@ def is_pit_lap(index, laps):
         return True
     return False
 
-def add_points_to_matrix(tire_matrix):
+def add_points_to_matrix(tire_matrix, year):
     ergast = Ergast()
     standings = ergast.get_driver_standings(season=2024, round="last", result_type = "raw")
     standings = standings[0]['DriverStandings']
@@ -83,8 +84,9 @@ def add_points_to_matrix(tire_matrix):
         points = entry['points']
         driver_points[driver_code] = points
 
-    tire_matrix['Points'] = tire_matrix.index.map(driver_points)
-    print(tire_matrix.corr()['Points'])
+    tire_matrix.to_csv('/Users/judahkrug/Desktop/' + str(year) + '_multipliers_with_points.csv')
+    tire_matrix['Points'] = tire_matrix.index.map(driver_points).fillna(0)
+
 
 
 def plot_comparison(d1, d2, d1_telemetry, d2_telemetry, team_d1, team_d2, delta_time, ref_tel):
