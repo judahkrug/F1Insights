@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="512f1de3-3b84-4aa1-ad62-075b682ea220" name="Changes" comment="Add points scored to tire_matrix">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/populate_tire_multipliers.py" afterDir="false" />
+    <list default="true" id="512f1de3-3b84-4aa1-ad62-075b682ea220" name="Changes" comment="Modularize Code">
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/insights.py" beforeDir="false" afterPath="$PROJECT_DIR$/insights.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lap_comparison_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/lap_comparison_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/populate_tire_multipliers.py" beforeDir="false" afterPath="$PROJECT_DIR$/populate_tire_multipliers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,10 +59,10 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/judahkrug/Desktop/Files/Projects/F1/F1Insights"
+    "last_opened_file_path": "/Users/judahkrug/Desktop/F1-Data/Files/Projects/F1/F1Insights"
   }
 }]]></component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.insights">
     <configuration name="insights" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="F1Insights" />
       <option name="ENV_FILES" value="" />
@@ -107,8 +109,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.insights" />
+        <item itemvalue="Python.main" />
       </list>
     </recent_temporary>
   </component>
@@ -208,7 +210,15 @@
       <option name="project" value="LOCAL" />
       <updated>1739558240911</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Modularize Code">
+      <option name="closed" value="true" />
+      <created>1739656930333</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1739656930333</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -222,15 +232,21 @@
     <MESSAGE value="Populate updated_tire_multipliers with expected values" />
     <MESSAGE value="Update deviation function" />
     <MESSAGE value="Add points scored to tire_matrix" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add points scored to tire_matrix" />
+    <MESSAGE value="Modularize Code" />
+    <option name="LAST_COMMIT_MESSAGE" value="Modularize Code" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utils.py</url>
-          <line>87</line>
+          <line>86</line>
           <option name="timeStamp" value="127" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/insights.py</url>
+          <line>5</line>
+          <option name="timeStamp" value="128" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

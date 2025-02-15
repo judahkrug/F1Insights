@@ -45,7 +45,7 @@ def populate_tire_multipliers(year, races, tire_matrix):
                 avg_multiplier = np.average(tire_multipliers)
                 tire_matrix.at[driver, race[0]] = avg_multiplier
 
-    # tire_matrix.to_csv('/Users/judahkrug/Desktop/' + str(year) + '_tire_multipliers.csv')
+    # tire_matrix.to_csv('/Users/judahkrug/Desktop/F1-Data/' + str(year) + '_tire_multipliers.csv')
     return tire_matrix
 
 

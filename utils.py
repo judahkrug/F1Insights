@@ -63,7 +63,7 @@ def populate_missing_entries(matrix, year):
             if pd.isna(matrix.at[driver, race]):
                 matrix.at[driver, race] = average_deviation * matrix[race].min()
 
-    matrix.to_csv('/Users/judahkrug/Desktop/' + str(year) + '_tire_multipliers.csv')
+    # matrix.to_csv('/Users/judahkrug/Desktop/F1-Data/' + str(year) + '_tire_multipliers.csv')
     return matrix
 
 
@@ -74,7 +74,7 @@ def is_pit_lap(index, laps):
 
 def add_points_to_matrix(tire_matrix, year):
     ergast = Ergast()
-    standings = ergast.get_driver_standings(season=2024, round="last", result_type = "raw")
+    standings = ergast.get_driver_standings(season=year, round="last", result_type = "raw")
     standings = standings[0]['DriverStandings']
 
     driver_points = {}
@@ -84,8 +84,9 @@ def add_points_to_matrix(tire_matrix, year):
         points = entry['points']
         driver_points[driver_code] = points
 
-    tire_matrix.to_csv('/Users/judahkrug/Desktop/' + str(year) + '_multipliers_with_points.csv')
-    tire_matrix['Points'] = tire_matrix.index.map(driver_points).fillna(0)
+    tire_matrix[str(year) + ' Points'] = tire_matrix.index.map(driver_points).fillna(0)
+    tire_matrix.to_csv('/Users/judahkrug/Desktop/F1-Data/' + str(year) + '_multipliers_with_points.csv')
+
 
 
 

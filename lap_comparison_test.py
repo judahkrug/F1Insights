@@ -1,7 +1,6 @@
 import fastf1
-import pandas as pd
 from fastf1 import utils
-from utils import enable_cache, load_race, get_fastest_lap, plot_comparison, get_last_lap
+from utils import enable_cache, load_race, get_fastest_lap, plot_comparison
 
 
 def compare_fastest():
