@@ -1,29 +1,27 @@
-import fastf1
 import pandas as pd
 
-from populate_tire_multipliers import populate_tire_multipliers
-from utils import enable_cache, add_points_to_matrix, get_races, populate_missing_entries
+from populate_tire_matrix import populate_tire_matrix
+from utils import enable_cache, get_races
+
 
 def collect_data(years):
-    tire_matrix = pd.DataFrame()
+    tire_matrix = pd.DataFrame(columns=[
+        'Driver', 'Race', 'Stint', 'StintLapNumber', 'LapTime', 'Compound',
+        'BaselineTime', 'DegradationPct', 'SmoothedDeg', 'PositionsGained'
+    ])
+
     for year in years:
         races = get_races(year)
-        yearly_tire_matrix = pd.DataFrame()
+        yearly_tire_matrix = pd.DataFrame(columns=tire_matrix.columns)
 
-        # Populate matrix with Tire Multipliers
-        yearly_tire_matrix = populate_tire_multipliers(year, races, yearly_tire_matrix)
-
-        # Populate missing entries with average deviation from race average tire_multipliers
-        yearly_tire_matrix = populate_missing_entries(yearly_tire_matrix, year)
-
-        # Add points to the matrix
-        add_points_to_matrix(yearly_tire_matrix, year)
+        # Populate Tire Matrix
+        yearly_tire_matrix = populate_tire_matrix(year, races, yearly_tire_matrix)
 
         # Append to the main tire matrix
-        tire_matrix = tire_matrix.combine_first(yearly_tire_matrix)
-        # tire_matrix = pd.concat([tire_matrix, yearly_tire_matrix], ignore_index=False)
+        tire_matrix = pd.concat([tire_matrix, yearly_tire_matrix], ignore_index=True)
 
     return tire_matrix
+
 
 def main():
     enable_cache()
@@ -31,10 +29,8 @@ def main():
     tire_matrix = collect_data(years)
 
     # Save the aggregated data to CSV
-    tire_matrix.to_csv('/Users/judahkrug/Desktop/F1-Data/aggregated_tire_multipliers.csv')
+    tire_matrix.to_csv('/Users/judahkrug/Desktop/F1-Data/tire_metrics.csv', index=False)
 
-    print("Correlations Below:")
-    print(tire_matrix.corr()['2024 Points'])
     print("Execution Done")
 
 

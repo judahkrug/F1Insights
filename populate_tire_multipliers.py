@@ -7,26 +7,19 @@ def populate_tire_multipliers(year, races, tire_matrix):
     for race in races:
         session = load_race(year, race[0], 'R')
 
-        # Add the race to the matrix if not already present
-        if race[0] not in tire_matrix.columns:
-            tire_matrix[race[0]] = pd.Series(dtype='float64')
-
         print(f"Loading race {race[2]} / {len(races)}")
         print("Loading " + race[0])
         print()
 
         for driver in session.results.Abbreviation.values:
-            # Add the driver to the matrix if not already present
-            if driver not in tire_matrix.index:
-                tire_matrix.loc[driver] = pd.Series(dtype='float64')
+            laps = session.laps.pick_drivers(driver)
+
+            # # Remove drivers who completed < 75% the race
+            # if laps.shape[0] < .75 * session.total_laps:
+            #     continue
 
             tire_multipliers = []
             stint_laps = []
-            laps = session.laps.pick_drivers(driver)
-
-            # Remove drivers who completed < 75% the race
-            if laps.shape[0] < .75 * session.total_laps:
-                break
 
             # Populate tire_multipliers
             for index, lapNumber in laps.LapNumber.items():
@@ -43,11 +36,20 @@ def populate_tire_multipliers(year, races, tire_matrix):
 
             if len(tire_multipliers) >= 1:
                 avg_multiplier = np.average(tire_multipliers)
-                tire_matrix.at[driver, race[0]] = avg_multiplier
+                tire_matrix = tire_matrix.append({
+                    'Driver': driver,
+                    'Race': race[0],
+                    'Stint': stint_number,
+                    'StintLapNumber': lapNumber,
+                    'LapTime': laps.LapTime[index],
+                    'Compound': laps.Compound[index],
+                    'BaselineTime': laps.BaselineTime[index] if 'BaselineTime' in laps.columns else np.nan,
+                    'DegradationPct': laps.DegradationPct[index] if 'DegradationPct' in laps.columns else np.nan,
+                    'SmoothedDeg': laps.SmoothedDeg[index] if 'SmoothedDeg' in laps.columns else np.nan,
+                    'PositionsGained': laps.PositionsGained[index] if 'PositionsGained' in laps.columns else np.nan
+                }, ignore_index=True)
 
-    # tire_matrix.to_csv('/Users/judahkrug/Desktop/F1-Data/' + str(year) + '_tire_multipliers.csv')
     return tire_matrix
-
 
 def get_tire_multiplier(stint_laps):
     if len(stint_laps) < 5:
