@@ -1,4 +1,5 @@
 import fastf1
+import numpy as np
 import pandas as pd
 from fastf1.ergast import Ergast
 
@@ -44,6 +45,38 @@ def is_pit_lap(index, laps):
     if pd.notnull(laps.PitInTime[index]) or pd.notnull(laps.PitOutTime[index]):
         return True
     return False
+
+# TODO: Improve valid lap function
+def is_valid_lap(index, stint_laps):
+    return (stint_laps.LapNumber[index] != 1 and
+            not is_pit_lap(index, stint_laps) and
+            pd.notnull(stint_laps.LapTime[index]) and
+            not stint_laps.Deleted[index])
+
+def calculate_baseline(stint_laps):
+    # Get the first 3 valid laps of the stint
+    initial_laps = stint_laps.head(3).copy()
+
+    if len(initial_laps) == 0:
+        return np.nan
+
+    # Calculate median and std of these laps
+    median_time = initial_laps['LapTime'].median()
+    std_time = initial_laps['LapTime'].std()
+
+    # If first lap is an outlier (> 1.5 std from median), use second best lap as baseline
+    if abs(initial_laps.iloc[0]['LapTime'] - median_time) > 1.5 * std_time:
+        # Use the fastest non-outlier lap from first 3 laps as baseline
+        valid_laps = initial_laps[abs(initial_laps['LapTime'] - median_time) <= 1.5 * std_time]
+        if len(valid_laps) > 0:
+            baseline = valid_laps['LapTime'].min()
+        else:
+            # If all initial laps are outliers, use the median
+            baseline = median_time
+    else:
+        baseline = initial_laps.iloc[0]['LapTime']
+
+    return baseline
 
 def add_points_to_matrix(tire_matrix, year):
     ergast = Ergast()

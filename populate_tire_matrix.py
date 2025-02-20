@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from utils import is_pit_lap, load_race
+from utils import calculate_baseline, is_pit_lap, is_valid_lap, load_race
 
 
 def populate_tire_matrix(year, races, tire_matrix):
@@ -28,10 +28,9 @@ def populate_tire_matrix(year, races, tire_matrix):
                 valid_indices = []
                 stint_records = []
 
-                # TODO: Improve valid lap function
                 # Collect valid lap data
                 for index, lapNumber in stint_laps.LapNumber.items():
-                    if lapNumber != 1 and not is_pit_lap(index, stint_laps) and pd.notnull(stint_laps.LapTime[index]):
+                    if is_valid_lap(index, stint_laps):
                         lap_times.append(stint_laps.LapTime[index])
                         valid_indices.append(index)
 
@@ -39,8 +38,12 @@ def populate_tire_matrix(year, races, tire_matrix):
                 if not lap_times:
                     continue
 
-                # Calculate degradation
+                # Calculate baseline time
                 baseline_time = lap_times[0]
+                # TODO: Finish testing calculate_baseline
+                # baseline_time = calculate_baseline(stint_laps)
+
+                # Calculate degradation
                 degradation_pcts = [(lap_time - baseline_time) / baseline_time * 100
                                     for lap_time in lap_times]
 
@@ -51,16 +54,18 @@ def populate_tire_matrix(year, races, tire_matrix):
                 for i, index in enumerate(valid_indices):
                     positions_gained = initial_position - stint_laps.Position[index]
 
-                    # TODO: Convert LapTime and BaselineTime to milliseconds? Instead of DateTime...
+                    # Convert LapTime and BaselineTime to milliseconds
+                    lap_time_ms = stint_laps.LapTime[index].total_seconds() * 1000
+                    baseline_time_ms = baseline_time.total_seconds() * 1000
 
                     stint_records.append({
                         'Driver': driver,
                         'Race': race[0],
                         'Stint': stint_num,
                         'StintLapNumber': stint_laps.LapNumber[index],
-                        'LapTime': stint_laps.LapTime[index],
+                        'LapTime': lap_time_ms,
                         'Compound': stint_laps.Compound[index],
-                        'BaselineTime': baseline_time,
+                        'BaselineTime': baseline_time_ms,
                         'DegradationPct': degradation_pcts[i],
                         'SmoothedDeg': smoothed_deg[i],
                         'PositionsGained': positions_gained
