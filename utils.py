@@ -53,28 +53,30 @@ def is_valid_lap(index, stint_laps):
             pd.notnull(stint_laps.LapTime[index]) and
             not stint_laps.Deleted[index])
 
-def calculate_baseline(stint_laps):
+def calculate_baseline(stint_laps, valid_indices):
     # Get the first 3 valid laps of the stint
-    initial_laps = stint_laps.head(3).copy()
+    initial_valid_laps = stint_laps.loc[valid_indices[:3]].copy()
 
-    if len(initial_laps) == 0:
+    if len(initial_valid_laps) == 0:
         return np.nan
 
-    # Calculate median and std of these laps
-    median_time = initial_laps['LapTime'].median()
-    std_time = initial_laps['LapTime'].std()
+    # Calculate median and std of these valid laps
+    median_time = initial_valid_laps['LapTime'].median()
+    std_time = initial_valid_laps['LapTime'].std()
 
-    # If first lap is an outlier (> 1.5 std from median), use second best lap as baseline
-    if abs(initial_laps.iloc[0]['LapTime'] - median_time) > 1.5 * std_time:
-        # Use the fastest non-outlier lap from first 3 laps as baseline
-        valid_laps = initial_laps[abs(initial_laps['LapTime'] - median_time) <= 1.5 * std_time]
+    # If first valid lap is an outlier (> 1.5 std from median), use second best lap as baseline
+    if abs(initial_valid_laps.iloc[0]['LapTime'] - median_time) > 1.5 * std_time:
+        # Use the fastest non-outlier lap from first 3 valid laps as baseline
+        valid_laps = initial_valid_laps[
+            abs(initial_valid_laps['LapTime'] - median_time) <= 1.5 * std_time
+            ]
         if len(valid_laps) > 0:
             baseline = valid_laps['LapTime'].min()
         else:
-            # If all initial laps are outliers, use the median
+            # If all initial valid laps are outliers, use the median
             baseline = median_time
     else:
-        baseline = initial_laps.iloc[0]['LapTime']
+        baseline = initial_valid_laps.iloc[0]['LapTime']
 
     return baseline
 

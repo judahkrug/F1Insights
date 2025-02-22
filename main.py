@@ -6,8 +6,8 @@ from utils import enable_cache, get_races
 
 def collect_data(years):
     tire_matrix = pd.DataFrame(columns=[
-        'Driver', 'Race', 'Stint', 'StintLapNumber', 'LapTime', 'Compound',
-        'BaselineTime', 'DegradationPct', 'SmoothedDeg', 'PositionsGained'
+        'Driver', 'Race', 'LapNumber', 'Stint', 'StintLapNumber', 'LapTime', 'Compound', 'BaselineTime',
+        'DegradationPct', 'SmoothedDeg', 'PositionsGained'
     ])
 
     for year in years:
@@ -25,7 +25,8 @@ def collect_data(years):
 
 def main():
     enable_cache()
-    years = [2023, 2024]
+    years = [2022, 2023, 2024]
+
     tire_matrix = collect_data(years)
 
     # Save the aggregated data to CSV

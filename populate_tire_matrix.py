@@ -19,8 +19,6 @@ def populate_tire_matrix(year, races, tire_matrix):
             if laps.Position.empty:
                 continue
         
-            initial_position = laps.Position.iloc[0]
-
             # Process each stint separately
             for stint_num in laps.Stint.unique():
                 stint_laps = laps[laps.Stint == stint_num]
@@ -39,9 +37,7 @@ def populate_tire_matrix(year, races, tire_matrix):
                     continue
 
                 # Calculate baseline time
-                baseline_time = lap_times[0]
-                # TODO: Finish testing calculate_baseline
-                # baseline_time = calculate_baseline(stint_laps)
+                baseline_time = calculate_baseline(stint_laps, valid_indices)
 
                 # Calculate degradation
                 degradation_pcts = [(lap_time - baseline_time) / baseline_time * 100
@@ -52,7 +48,14 @@ def populate_tire_matrix(year, races, tire_matrix):
 
                 # Populate tire_matrix with processed data
                 for i, index in enumerate(valid_indices):
-                    positions_gained = initial_position - stint_laps.Position[index]
+                    positions_gained = 0
+                    if i > 0:  # If not the first valid lap
+                        prev_index = valid_indices[i - 1]
+                        positions_gained = stint_laps.Position[index] - stint_laps.Position[prev_index]
+
+                    # Get the lap number within this stint
+                    stint_lap_number = (stint_laps.loc[index, 'LapNumber'] -
+                                        stint_laps['LapNumber'].iloc[0] + 1)
 
                     # Convert LapTime and BaselineTime to milliseconds
                     lap_time_ms = stint_laps.LapTime[index].total_seconds() * 1000
@@ -61,8 +64,9 @@ def populate_tire_matrix(year, races, tire_matrix):
                     stint_records.append({
                         'Driver': driver,
                         'Race': race[0],
+                        'LapNumber': stint_laps.LapNumber[index],
                         'Stint': stint_num,
-                        'StintLapNumber': stint_laps.LapNumber[index],
+                        'StintLapNumber': stint_lap_number,
                         'LapTime': lap_time_ms,
                         'Compound': stint_laps.Compound[index],
                         'BaselineTime': baseline_time_ms,
