@@ -11,7 +11,7 @@ def main():
     years = [2022, 2023, 2024]
 
     # Data collection - with option to skip if already collected
-    collect_new_data = False  # Set to True to collect fresh data
+    collect_new_data = True  # Set to True to collect fresh data
     if collect_new_data:
         tire_matrix = collect_data(years)
         tire_matrix.to_csv('data/processed/tire_metrics.csv', index=False)
@@ -26,14 +26,23 @@ def main():
     train_data = modeling_data[modeling_data['Race'].str.contains('2022|2023')].copy()
     test_data = modeling_data[modeling_data['Race'].str.contains('2024')].copy()
 
-    # Define predictors (removing highly correlated features)
+    # Define enhanced predictors
     predictors = [
         'SmoothedDeg_mean',
         'SmoothedDeg_std',
         'LapTime_mean',
         'LapTime_std',
-        'DegradationPct_max'
+        'LapTime_min',
+        'DegradationPct_mean',
+        'DegradationPct_max',
+        'DegradationPct_median',
+        'RelativePerformance',
+        'PositionsGained'
     ]
+
+    # Add tire compound dummy variables
+    tire_columns = [col for col in modeling_data.columns if col.startswith('Tire_')]
+    predictors.extend(tire_columns)
 
     # Define target (using RacePoints as it's a better measure of performance)
     # target = 'RacePoints'

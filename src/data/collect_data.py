@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.utils.helpers import get_races, load_race, is_valid_lap, calculate_baseline
+from src.utils.helpers import extract_sc_vsc_periods, get_races, load_race, is_valid_lap, calculate_baseline
 
 
 def collect_data(years):
@@ -23,12 +23,14 @@ def collect_data(years):
 
 
 def populate_tire_matrix(year, races, tire_matrix):
-    for race in races:
+    for index, race in enumerate(races):
         session = load_race(year, race[0], 'R')
 
-        print(f"Loading race {race[2]} / {len(races)}")
+        print(f"Loading race {index + 1} / {len(races)}")
         print("Loading " + race[0])
         print()
+
+        sc_vsc_periods = extract_sc_vsc_periods(session.track_status)
 
         driver_points = session.results.set_index('Abbreviation')['Points'].to_dict()
 
@@ -47,7 +49,7 @@ def populate_tire_matrix(year, races, tire_matrix):
 
                 # Collect valid lap data
                 for index, lapNumber in stint_laps.LapNumber.items():
-                    if is_valid_lap(index, stint_laps):
+                    if is_valid_lap(index, stint_laps, sc_vsc_periods):
                         lap_times.append(stint_laps.LapTime[index])
                         valid_indices.append(index)
 

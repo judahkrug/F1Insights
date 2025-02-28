@@ -1,58 +1,56 @@
 import fastf1
 import numpy as np
 import pandas as pd
-from fastf1.ergast import Ergast
+
 
 def enable_cache(cache_dir='cache'):
     fastf1.Cache.enable_cache(cache_dir)
+
 
 def load_race(year, grand_prix, session):
     race = fastf1.get_session(year, grand_prix, session)
     race.load()
     return race
 
+
 def get_races(year):
     events = fastf1.get_event_schedule(year)
     races = []
     for i in range(events.shape[0]):
         if events['Session5'][i] == 'Race':
-            race_info = (events['OfficialEventName'][i], events['Country'][i], i)
+            race_info = (events['OfficialEventName'][i], events['Country'][i])
             races.append(race_info)
     return races
 
-def populate_missing_entries(matrix, year):
-    for driver in matrix.index:
-        deviations = []
-
-        # Populate the multipliers
-        for race in matrix.columns:
-            driver_metric = matrix.at[driver, race]
-            if pd.notna(driver_metric):
-                race_average_metric = matrix[race].mean()
-                deviations.append(driver_metric / race_average_metric)
-
-        # Fill in the missing entries
-        if len(deviations) == 0:
-            continue
-        average_deviation = sum(deviations) / len(deviations)
-        for race in matrix.columns:
-            if pd.isna(matrix.at[driver, race]):
-                matrix.at[driver, race] = average_deviation * matrix[race].min()
-
-    return matrix
 
 def is_pit_lap(index, laps):
     if pd.notnull(laps.PitInTime[index]) or pd.notnull(laps.PitOutTime[index]):
         return True
     return False
 
+
 # TODO: Improve valid lap function
 # Remove Safety car laps and flags?
-def is_valid_lap(index, stint_laps):
-    return (stint_laps.LapNumber[index] != 1 and
-            not is_pit_lap(index, stint_laps) and
-            pd.notnull(stint_laps.LapTime[index]) and
-            not stint_laps.Deleted[index])
+def is_valid_lap(index, stint_laps, sc_vsc_periods=None):
+    if (stint_laps.LapNumber[index] == 1 or
+            is_pit_lap(index, stint_laps) or
+            pd.isnull(stint_laps.LapTime[index]) or
+            stint_laps.Deleted[index]):
+        return False
+
+    # If SC/VSC periods are provided, check if lap was affected
+    if sc_vsc_periods:
+        lap_start_time = stint_laps.loc[index, 'LapStartTime']
+        lap_end_time = stint_laps.loc[index, 'Time']
+
+        # Check if lap overlaps with any SC/VSC period
+        for start, end in sc_vsc_periods:
+            # Check for overlap: not (lap ends before period starts OR lap starts after period ends)
+            if not ((lap_end_time < start) or (lap_start_time > end)):
+                return False
+
+    return True
+
 
 def calculate_baseline(stint_laps, valid_indices):
     # Get the first 3 valid laps of the stint
@@ -81,19 +79,22 @@ def calculate_baseline(stint_laps, valid_indices):
 
     return baseline
 
-def add_points_to_matrix(tire_matrix, year):
-    ergast = Ergast()
-    standings = ergast.get_driver_standings(season=year, round="last", result_type="raw")
-    standings = standings[0]['DriverStandings']
 
-    driver_points = {}
+def extract_sc_vsc_periods(track_status):
+    sc_vsc_periods = []
+    sc_vsc_active = False
+    start_time = None
 
-    for entry in standings:
-        driver_code = entry['Driver']['code']
-        points = entry.get('points', 0)  # Set points to 0 if not available
-        driver_points[driver_code] = points
+    for i, row in track_status.iterrows():
+        if 'SCDeployed' in row['Message'] or 'VSCDeployed' in row['Message']:
+            sc_vsc_active = True
+            start_time = row['Time']
+        elif 'AllClear' in row['Message'] and sc_vsc_active:
+            sc_vsc_active = False
+            sc_vsc_periods.append((start_time, row['Time']))
 
-    tire_matrix[str(year) + ' Points'] = tire_matrix['Driver'].map(driver_points).fillna(0)
-    tire_matrix.to_csv('/Users/judahkrug/Desktop/F1-Data/' + str(year) + '_multipliers_with_points.csv', index=False)
+    # If SC/VSC is still active at the end of the data
+    if sc_vsc_active and start_time is not None:
+        sc_vsc_periods.append((start_time, pd.Timedelta.max))
 
-
+    return sc_vsc_periods
