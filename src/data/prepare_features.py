@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def prepare_features(df):
-    # Aggregate by driver and race
+    # Group by driver and race
     driver_race_stats = df.groupby(['Driver', 'Race', 'Compound']).agg({
         'SmoothedDeg': ['mean', 'max', 'std'],
         'LapTime': ['mean', 'std', 'min'],
@@ -12,7 +12,7 @@ def prepare_features(df):
         'PositionsGained': 'sum'
     }).reset_index()
 
-    # Flatten column names
+    # Flatten columns
     driver_race_stats.columns = ['Driver', 'Race', 'Compound'] + [
         f'{col[0]}_{col[1]}' for col in driver_race_stats.columns[3:]
     ]
@@ -25,7 +25,6 @@ def prepare_features(df):
     driver_race_stats['RelativePerformance'] = driver_race_stats['LapTime_min'] / driver_race_stats.groupby('Race')[
         'LapTime_min'].transform('mean')
 
-    # Rename for clarity
     driver_race_stats.rename(columns={
         'RacePoints_max': 'RacePoints',
         'StintLength_mean': 'StintLength',

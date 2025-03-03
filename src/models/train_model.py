@@ -9,7 +9,6 @@ from sklearn.preprocessing import StandardScaler
 
 
 def train_and_evaluate_model(train_data, test_data, predictors, target):
-    # Scale features
     scaler = StandardScaler()
     X_train = scaler.fit_transform(train_data[predictors])
     X_test = scaler.transform(test_data[predictors])
@@ -19,15 +18,13 @@ def train_and_evaluate_model(train_data, test_data, predictors, target):
     param_grid = {'alpha': [0.01, 0.1, 1.0, 10.0, 100.0]}
     grid_search = GridSearchCV(ridge, param_grid, cv=5, scoring='r2')
     grid_search.fit(X_train, train_data[target])
-
     best_alpha = grid_search.best_params_['alpha']
-    print(f"Best alpha: {best_alpha}")
 
     # Use best model
     reg = Ridge(alpha=best_alpha)
     reg.fit(X_train, train_data[target])
 
-    # Also try a Random Forest model
+    # Try a Random Forest model
     rf = RandomForestRegressor(n_estimators=100, random_state=42)
     rf.fit(X_train, train_data[target])
 
@@ -39,13 +36,15 @@ def train_and_evaluate_model(train_data, test_data, predictors, target):
     test_predictions_rf = rf.predict(X_test)
 
     # Evaluate models
-    print("\nRidge Regression Performance:")
+    print()
+    print(f"Ridge Regression Test Performance (target = {target}):")
     print(f"Train R² Score: {r2_score(train_data[target], train_predictions_ridge):.3f}")
     print(f"Test R² Score: {r2_score(test_data[target], test_predictions_ridge):.3f}")
     print(f"Train MAE: {mean_absolute_error(train_data[target], train_predictions_ridge):.3f}")
     print(f"Test MAE: {mean_absolute_error(test_data[target], test_predictions_ridge):.3f}")
 
-    print("\nRandom Forest Performance:")
+    print()
+    print(f"Random Forest Test Performance (target = {target}):")
     print(f"Train R² Score: {r2_score(train_data[target], train_predictions_rf):.3f}")
     print(f"Test R² Score: {r2_score(test_data[target], test_predictions_rf):.3f}")
     print(f"Train MAE: {mean_absolute_error(train_data[target], train_predictions_rf):.3f}")
@@ -63,19 +62,19 @@ def train_and_evaluate_model(train_data, test_data, predictors, target):
         'Importance': rf.feature_importances_
     })
 
-    print("\nRidge Feature Importance:")
+    print()
+    print(f"Ridge Feature Importance ({target}):")
     print(feature_importance_ridge.sort_values('Coefficient', ascending=False).head(10))
 
-    print("\nRandom Forest Feature Importance:")
+    print()
+    print(f"Random Forest Feature Importance ({target}):")
     print(feature_importance_rf.sort_values('Importance', ascending=False).head(10))
 
-    # Cross-validation score
-    cv_scores = cross_val_score(reg, X_train, train_data[target], cv=5)
-    print(f"\nCross-validation R² scores: {cv_scores.mean():.3f} (+/- {cv_scores.std() * 2:.3f})")
+    if r2_score(test_data[target], test_predictions_ridge) > r2_score(test_data[target], test_predictions_rf):
+        better_model = "Ridge"
+    else:
+        better_model = "Random Forest"
 
-    # Plot actual vs predicted for the better model
-    better_model = "Ridge" if r2_score(test_data[target], test_predictions_ridge) > r2_score(test_data[target],
-                                                                                             test_predictions_rf) else "RF"
 
     if better_model == "Ridge":
         train_predictions = train_predictions_ridge
@@ -96,5 +95,3 @@ def train_and_evaluate_model(train_data, test_data, predictors, target):
     plt.legend()
     plt.tight_layout()
     plt.show()
-
-    return chosen_model, scaler, feature_importance_ridge if better_model == "Ridge" else feature_importance_rf
