@@ -28,14 +28,14 @@ def train_and_evaluate_model(train_data, test_data, predictors, target):
     rf = RandomForestRegressor(n_estimators=100, random_state=42)
     rf.fit(X_train, train_data[target])
 
-    # Make predictions with both models
+    # Make predictions with both analysis
     train_predictions_ridge = reg.predict(X_train)
     test_predictions_ridge = reg.predict(X_test)
 
     train_predictions_rf = rf.predict(X_train)
     test_predictions_rf = rf.predict(X_test)
 
-    # Evaluate models
+    # Evaluate analysis
     print()
     print(f"Ridge Regression Test Performance (target = {target}):")
     print(f"Train R² Score: {r2_score(train_data[target], train_predictions_ridge):.3f}")

@@ -1,7 +1,8 @@
 import pandas as pd
 
+from src.analysis.best_driver import analyze_best_driver, plot_driver_rankings
 from src.data.collect_data import collect_data
-from src.models.train_model import train_and_evaluate_model
+from src.analysis.train_model import train_and_evaluate_model
 from src.utils.helpers import enable_cache
 from src.data.prepare_features import prepare_features
 
@@ -48,8 +49,27 @@ def main():
     target_race_points = 'RacePoints'
 
     # Train and evaluate model
-    train_and_evaluate_model(train_data, test_data, predictors, target_stint_length)
-    train_and_evaluate_model(train_data, test_data, predictors, target_race_points)
+    # train_and_evaluate_model(train_data, test_data, predictors, target_stint_length)
+    # train_and_evaluate_model(train_data, test_data, predictors, target_race_points)
+
+    # NEW: Analyze best drivers
+    print("====================")
+    print("BEST DRIVER ANALYSIS")
+    print("====================")
+
+    # Overall driver rankings
+    driver_rankings = analyze_best_driver(tire_matrix, weighted=True)
+
+    # Display top 10 drivers
+    print("\nTop 10 Drivers (Overall Performance):")
+    print(driver_rankings[['Driver', 'CompositeScore', 'PointsPerRace',
+                           'DegradationPct', 'PositionsGained']].head(20))
+
+    # Visualize the driver rankings
+    plot_driver_rankings(driver_rankings, top_n=20)
+
+    # Visualize top drivers with radar charts
+    plot_driver_rankings(driver_rankings, top_n=6, radar=True)
 
 
 if __name__ == "__main__":

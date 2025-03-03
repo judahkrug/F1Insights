@@ -29,8 +29,6 @@ def is_pit_lap(index, laps):
     return False
 
 
-# TODO: Improve valid lap function
-# Remove Safety car laps and flags?
 def is_valid_lap(index, stint_laps, sc_vsc_periods=None):
     if (stint_laps.LapNumber[index] == 1 or
             is_pit_lap(index, stint_laps) or
@@ -45,7 +43,6 @@ def is_valid_lap(index, stint_laps, sc_vsc_periods=None):
 
         # Check if lap overlaps with any SC/VSC period
         for start, end in sc_vsc_periods:
-            # Check for overlap: not (lap ends before period starts OR lap starts after period ends)
             if not ((lap_end_time < start) or (lap_start_time > end)):
                 return False
 
@@ -59,7 +56,7 @@ def calculate_baseline(stint_laps, valid_indices):
     if len(initial_valid_laps) == 0:
         return np.nan
 
-    # Calculate median and std of these valid laps
+    # Calculate median and standard deviation of these valid laps
     median_time = initial_valid_laps['LapTime'].median()
     std_time = initial_valid_laps['LapTime'].std()
 
