@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.analysis.best_driver import analyze_best_driver, plot_driver_rankings
+from src.analysis.rank_drivers import analyze_best_driver, plot_driver_rankings
 from src.data.collect_data import collect_data
 from src.analysis.train_model import train_and_evaluate_model
 from src.utils.helpers import enable_cache
@@ -9,7 +9,7 @@ from src.data.prepare_features import prepare_features
 
 def main():
     enable_cache()
-    years = [2021, 2022, 2023, 2024]
+    years = [2020, 2021, 2022, 2023, 2024]
 
     # Data collection - set collect_new_data to True for fresh data
     collect_new_data = False
@@ -23,7 +23,7 @@ def main():
     modeling_data = prepare_features(tire_matrix)
 
     # Split into train and test
-    train_data = modeling_data[modeling_data['Race'].str.contains('2021|2022|2023')].copy()
+    train_data = modeling_data[modeling_data['Race'].str.contains('2020|2021|2022|2023')].copy()
     test_data = modeling_data[modeling_data['Race'].str.contains('2024')].copy()
 
     # Define enhanced predictors
@@ -60,10 +60,10 @@ def main():
     # Overall driver rankings
     driver_rankings = analyze_best_driver(tire_matrix, weighted=True)
 
-    # Display top 10 drivers
-    print("\nTop 10 Drivers (Overall Performance):")
+    # Display top 20 drivers
+    print("\nTop 20 Drivers (Overall Performance):")
     print(driver_rankings[['Driver', 'CompositeScore', 'PointsPerRace',
-                           'DegradationPct', 'PositionsGained']].head(20))
+                           'DegradationPct', 'AvgPositionsGained']].head(20))
 
     # Visualize the driver rankings
     plot_driver_rankings(driver_rankings, top_n=20)

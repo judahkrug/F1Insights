@@ -6,7 +6,8 @@ from src.utils.helpers import extract_sc_vsc_periods, get_races, load_race, is_v
 def collect_data(years):
     tire_matrix = pd.DataFrame(columns=[
         'Driver', 'Race', 'Year', 'LapNumber', 'Stint', 'StintLapNumber', 'LapTime', 'Compound', 'BaselineTime',
-        'DegradationPct', 'SmoothedDeg', 'PositionsGained', 'RacePoints', 'StintLength', 'FinishPosition'
+        'DegradationPct', 'SmoothedDeg', 'PositionsGained', 'RacePoints', 'StintLength', 'FinishPosition',
+        'StartingPosition'
     ])
 
     for year in years:
@@ -34,6 +35,7 @@ def populate_tire_matrix(year, races, tire_matrix):
 
         driver_points = session.results.set_index('Abbreviation')['Points'].to_dict()
 
+        starting_positions = session.results.set_index('Abbreviation')['GridPosition'].to_dict()
         finish_positions = session.results.set_index('Abbreviation')['Position'].to_dict()
 
         for driver in session.results.Abbreviation.values:
@@ -87,6 +89,9 @@ def populate_tire_matrix(year, races, tire_matrix):
                     baseline_time_ms = baseline_time.total_seconds() * 1000
                     race_points = driver_points.get(driver, 0)
 
+                    starting_position = starting_positions.get(driver)
+                    if starting_position is None:
+                        print("Error - No starting position data")
                     finish_position = finish_positions.get(driver, 1 + max(finish_positions.values()))
 
                     stint_records.append({
@@ -104,7 +109,8 @@ def populate_tire_matrix(year, races, tire_matrix):
                         'PositionsGained': positions_gained,
                         'RacePoints': race_points,
                         'StintLength': stint_length,
-                        'FinishPosition': finish_position
+                        'FinishPosition': finish_position,
+                        'StartingPosition': starting_position
                     })
 
                 # Add stint records to tire_matrix

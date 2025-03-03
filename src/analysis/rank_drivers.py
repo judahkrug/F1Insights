@@ -6,21 +6,33 @@ import seaborn as sns
 
 
 def analyze_best_driver(tire_matrix, weighted=True):
-    # Group data by Driver
+    # First calculate RacePoints correctly - sum points per unique Race-Driver combination
+    race_points = tire_matrix.drop_duplicates(subset=['Driver', 'Race'])[['Driver', 'Race', 'RacePoints']]
+    total_points_by_driver = race_points.groupby('Driver')['RacePoints'].sum().reset_index()
+
+    finish_position = tire_matrix.drop_duplicates(subset=['Driver', 'Race'])[['Driver', 'Race', 'FinishPosition']]
+    avg_finish_position_by_driver = finish_position.groupby('Driver')['FinishPosition'].mean().reset_index()
+
+    starting_position = tire_matrix.drop_duplicates(subset=['Driver', 'Race'])[['Driver', 'Race', 'StartingPosition']]
+    avg_starting_position_by_driver = starting_position.groupby('Driver')['StartingPosition'].mean().reset_index()
+
+    # Group data by Driver for other metrics
     driver_stats = tire_matrix.groupby('Driver').agg({
-        'RacePoints': 'sum',
         'SmoothedDeg': 'mean',  # Lower is better
         'DegradationPct': 'mean',  # Lower is better
         'LapTime': 'mean',  # Lower is better
-        'PositionsGained': 'sum',  # Higher is better
-        'Stint': 'count',
-        'FinishPosition': 'mean'  # Lower is better
+        'Stint': 'count'
     }).reset_index()
 
     # Calculate races participated
     races_by_driver = tire_matrix.groupby('Driver')['Race'].nunique().reset_index()
     races_by_driver.rename(columns={'Race': 'RacesParticipated'}, inplace=True)
+
+    # Merge all the data frames
     driver_stats = pd.merge(driver_stats, races_by_driver, on='Driver')
+    driver_stats = pd.merge(driver_stats, total_points_by_driver, on='Driver')
+    driver_stats = pd.merge(driver_stats, avg_finish_position_by_driver, on='Driver')
+    driver_stats = pd.merge(driver_stats, avg_starting_position_by_driver, on='Driver')
 
     # Remove drivers where RacesParticipated < 10
     driver_stats = driver_stats[driver_stats['RacesParticipated'] >= 10].reset_index()
@@ -29,7 +41,7 @@ def analyze_best_driver(tire_matrix, weighted=True):
     driver_stats['PointsPerRace'] = driver_stats['RacePoints'] / driver_stats['RacesParticipated']
 
     # Calculate positions gained per race
-    driver_stats['PositionsGainedPerRace'] = driver_stats['PositionsGained'] / driver_stats['RacesParticipated']
+    driver_stats['AvgPositionsGained'] = driver_stats['StartingPosition'] - driver_stats['FinishPosition']
 
     # Calculate tire management score (inverse of degradation - lower degradation is better)
     driver_stats['TireManagementScore'] = -1 * driver_stats['SmoothedDeg']
@@ -40,20 +52,21 @@ def analyze_best_driver(tire_matrix, weighted=True):
     driver_stats['LapTime_Normalized'] = -1 * scaler.fit_transform(
         driver_stats[['LapTime']]
     )
-    driver_stats['FinishPosition_Normalized'] = -1 * scaler.fit_transform(
+
+    # For finish position, we need to invert the scaling (lower positions are better)
+    driver_stats['FinishPosition_Normalized'] = 1 + (-1 * scaler.fit_transform(
         driver_stats[['FinishPosition']]
-    )
+    ))
 
     # Normalize other metrics
     normalized_features = pd.DataFrame(
-        scaler.fit_transform(driver_stats[['PointsPerRace', 'PositionsGainedPerRace', 'TireManagementScore']]),
-        columns=[f"{col}_Normalized" for col in ['PointsPerRace', 'PositionsGainedPerRace', 'TireManagementScore']]
+        scaler.fit_transform(driver_stats[['PointsPerRace', 'AvgPositionsGained', 'TireManagementScore']]),
+        columns=[f"{col}_Normalized" for col in ['PointsPerRace', 'AvgPositionsGained', 'TireManagementScore']]
     )
 
     # Add normalized features to driver stats
-    for col in ['PointsPerRace', 'PositionsGainedPerRace', 'TireManagementScore']:
+    for col in ['PointsPerRace', 'AvgPositionsGained', 'TireManagementScore']:
         driver_stats[f"{col}_Normalized"] = normalized_features[f"{col}_Normalized"]
-
 
     # Apply weights to different metrics if weighted is True
     if weighted:
@@ -61,7 +74,7 @@ def analyze_best_driver(tire_matrix, weighted=True):
             'PointsPerRace_Normalized': 0.4,  # Race points are important
             'TireManagementScore_Normalized': 0.3,  # Tire management is critical
             'FinishPosition_Normalized': 0.2,  # Finishing position is important
-            'PositionsGainedPerRace_Normalized': 0.1  # Positions gained shows overtaking ability
+            'AvgPositionsGained_Normalized': 0.1  # Positions gained shows overtaking ability
         }
     else:
         # Equal weights
@@ -69,7 +82,7 @@ def analyze_best_driver(tire_matrix, weighted=True):
             'PointsPerRace_Normalized',
             'TireManagementScore_Normalized',
             'FinishPosition_Normalized',
-            'PositionsGainedPerRace_Normalized'
+            'AvgPositionsGained_Normalized'
         ]}
 
     # Calculate composite score
@@ -99,27 +112,40 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         plt.tight_layout()
         plt.show()
 
-        # Points per race
+        # Points per race - sort by this metric specifically
         plt.figure(figsize=(12, 8))
-        sns.barplot(x='PointsPerRace', y='Driver', data=top_drivers)
+        points_sorted = ranked_drivers.sort_values('PointsPerRace', ascending=False).head(top_n)
+        sns.barplot(x='PointsPerRace', y='Driver', data=points_sorted)
         plt.title(f'Top {top_n} Drivers by Points Per Race')
         plt.xlabel('Points Per Race')
         plt.ylabel('Driver')
         plt.tight_layout()
         plt.show()
 
-        # Average Finish Position
+        # Points Gained Per Race - sort by this metric specifically
         plt.figure(figsize=(12, 8))
-        sns.barplot(x='FinishPosition', y='Driver', data=top_drivers)
+        points_sorted = ranked_drivers.sort_values('PointsPerRace', ascending=False).head(top_n)
+        sns.barplot(x='PointsPerRace', y='Driver', data=points_sorted)
+        plt.title(f'Top {top_n} Drivers by Points Per Race')
+        plt.xlabel('Points Per Race')
+        plt.ylabel('Driver')
+        plt.tight_layout()
+        plt.show()
+
+        # Average Finish Position - sort by this metric specifically (ascending as lower is better)
+        plt.figure(figsize=(12, 8))
+        finish_sorted = ranked_drivers.sort_values('FinishPosition', ascending=True).head(top_n)
+        sns.barplot(x='FinishPosition', y='Driver', data=finish_sorted)
         plt.title(f'Top {top_n} Drivers by Average Finish Position (Lower is Better)')
         plt.xlabel('Average Finish Position')
         plt.ylabel('Driver')
         plt.tight_layout()
         plt.show()
 
-        # Tire management
+        # Tire management - sort by this metric specifically (ascending as lower is better)
         plt.figure(figsize=(12, 8))
-        sns.barplot(x='SmoothedDeg', y='Driver', data=top_drivers)
+        tire_sorted = ranked_drivers.sort_values('SmoothedDeg', ascending=False).head(top_n)
+        sns.barplot(x='SmoothedDeg', y='Driver', data=tire_sorted)
         plt.title(f'Top {top_n} Drivers by Tire Degradation (Lower is Better)')
         plt.xlabel('Average Tire Degradation %')
         plt.ylabel('Driver')
@@ -132,7 +158,7 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
             'PointsPerRace_Normalized',
             'TireManagementScore_Normalized',
             'FinishPosition_Normalized',
-            'PositionsGainedPerRace_Normalized'
+            'AvgPositionsGained_Normalized'
         ]
 
         metric_labels = [

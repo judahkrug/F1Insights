@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="512f1de3-3b84-4aa1-ad62-075b682ea220" name="Changes" comment="Improve data collection function">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/analysis/best_driver.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analysis/best_driver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/analysis/best_driver.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analysis/rank_drivers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/collect_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/collect_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +52,7 @@
   "keyToString": {
     "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
     "Python.insights.executor": "Run",
-    "Python.main.executor": "Debug",
+    "Python.main.executor": "Run",
     "Python.metrics.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -270,9 +271,24 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/analysis/best_driver.py</url>
-          <line>145</line>
-          <option name="timeStamp" value="294" />
+          <url>file://$PROJECT_DIR$/src/analysis/rank_drivers.py</url>
+          <line>180</line>
+          <option name="timeStamp" value="296" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/analysis/rank_drivers.py</url>
+          <line>183</line>
+          <option name="timeStamp" value="298" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/analysis/rank_drivers.py</url>
+          <line>123</line>
+          <option name="timeStamp" value="304" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/main.py</url>
+          <line>64</line>
+          <option name="timeStamp" value="317" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
