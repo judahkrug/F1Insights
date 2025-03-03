@@ -79,10 +79,6 @@ Test MAE: 5.338
 ## Driver Rankings
 
 ```
-====================
-BEST DRIVER ANALYSIS
-====================
-
 Top 20 Drivers (Overall Performance):
    Driver  CompositeScore  PointsPerRace  DegradationPct  AvgPositionsGained
 1     VER        0.751312      18.951456       -0.489470           -0.077670
@@ -95,21 +91,21 @@ Top 20 Drivers (Overall Performance):
 
 ## Visualizations
 
-### Driver Composite Scores
+### Random Forest Model (target=Stint Length)
 
-![Driver Composite Scores](src/resources/composite_scores.png)
-
-### Points Per Race
-
-![Points Per Race](src/resources/points_per_race.png)
-
-### Tire Degradation
-
-![Tire Degradation](src/resources/tire_degradation.png)
+![Driver Radar Charts](src/resources/StintLength_Random_Forest.png)
 
 ### Driver Radar Charts
 
 ![Driver Radar Charts](src/resources/radar_charts.png)
+
+### Driver Composite Scores
+
+![Driver Composite Scores](src/resources/composite_scores.png)
+
+### Tire Degradation
+
+![Tire Degradation](src/resources/tire_degradation.png)
 
 ## Project Structure
 

@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="512f1de3-3b84-4aa1-ad62-075b682ea220" name="Changes" comment="Improve data collection function">
+    <list default="true" id="512f1de3-3b84-4aa1-ad62-075b682ea220" name="Changes" comment="Update README, add images">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/old/lap_comparison_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/2020AustrianGrandPrix-Race-NORVSHAM.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/actual_vs_predicted_stint.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/stint_length_predictions.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/analysis/rank_drivers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analysis/rank_drivers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/analysis/train_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analysis/train_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -239,7 +233,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740245711376</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Update README, add images">
+      <option name="closed" value="true" />
+      <created>1741035218654</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1741035218654</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -269,7 +271,8 @@
     <MESSAGE value="Rewrite code flow to make deeper matrices" />
     <MESSAGE value="Clean up utils, add new baseline time function" />
     <MESSAGE value="Fix calculate_baseline and clean up functions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix calculate_baseline and clean up functions" />
+    <MESSAGE value="Update README, add images" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update README, add images" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
