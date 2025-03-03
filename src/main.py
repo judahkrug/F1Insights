@@ -5,14 +5,12 @@ from src.data.collect_data import collect_data
 from src.analysis.train_model import train_and_evaluate_model
 from src.utils.helpers import enable_cache
 from src.data.prepare_features import prepare_features
+from src.config import collect_new_data, years, train_years, test_years, use_weights
 
 
 def main():
     enable_cache()
-    years = [2020, 2021, 2022, 2023, 2024]
 
-    # Data collection - set collect_new_data to True for fresh data
-    collect_new_data = False
     if collect_new_data:
         tire_matrix = collect_data(years)
         tire_matrix.to_csv('data/processed/tire_metrics.csv', index=False)
@@ -23,8 +21,8 @@ def main():
     modeling_data = prepare_features(tire_matrix)
 
     # Split into train and test
-    train_data = modeling_data[modeling_data['Race'].str.contains('2020|2021|2022|2023')].copy()
-    test_data = modeling_data[modeling_data['Race'].str.contains('2024')].copy()
+    train_data = modeling_data[modeling_data['Race'].str.contains('|'.join(map(str, train_years)))].copy()
+    test_data = modeling_data[modeling_data['Race'].str.contains('|'.join(map(str, test_years)))].copy()
 
     # Define predictors
     predictors = [
@@ -58,7 +56,7 @@ def main():
     print("====================")
 
     # Overall driver rankings
-    driver_rankings = analyze_best_driver(tire_matrix, weighted=True)
+    driver_rankings = analyze_best_driver(tire_matrix, weighted=use_weights)
 
     # Display top 20 drivers
     print("\nTop 20 Drivers (Overall Performance):")

@@ -3,7 +3,13 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from src.config import (
+    points_per_race_weight,
+    tire_management_score_weight,
+    starting_position_weight,
+    finish_position_weight,
+    avg_positions_gained_weight
+)
 
 def analyze_best_driver(tire_matrix, weighted=True):
     # First calculate RacePoints correctly - sum points per unique Race-Driver combination
@@ -64,11 +70,11 @@ def analyze_best_driver(tire_matrix, weighted=True):
     # Apply weights to different metrics if weighted is True
     if weighted:
         weights = {
-            'PointsPerRace_Normalized': 0.3,
-            'TireManagementScore_Normalized': 0.3,
-            'StartingPosition_Normalized': 0.2,
-            'FinishPosition_Normalized': 0.2,
-            'AvgPositionsGained_Normalized': 0
+            'PointsPerRace_Normalized': points_per_race_weight,
+            'TireManagementScore_Normalized': tire_management_score_weight,
+            'StartingPosition_Normalized': starting_position_weight,
+            'FinishPosition_Normalized': finish_position_weight,
+            'AvgPositionsGained_Normalized': avg_positions_gained_weight
         }
     else:
         # Equal weights
