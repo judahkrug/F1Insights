@@ -26,7 +26,7 @@ def main():
     train_data = modeling_data[modeling_data['Race'].str.contains('2020|2021|2022|2023')].copy()
     test_data = modeling_data[modeling_data['Race'].str.contains('2024')].copy()
 
-    # Define enhanced predictors
+    # Define predictors
     predictors = [
         'SmoothedDeg_mean',
         'SmoothedDeg_std',
@@ -49,8 +49,8 @@ def main():
     target_race_points = 'RacePoints'
 
     # Train and evaluate model
-    # train_and_evaluate_model(train_data, test_data, predictors, target_stint_length)
-    # train_and_evaluate_model(train_data, test_data, predictors, target_race_points)
+    train_and_evaluate_model(train_data, test_data, predictors, target_stint_length)
+    train_and_evaluate_model(train_data, test_data, predictors, target_race_points)
 
     # NEW: Analyze best drivers
     print("====================")

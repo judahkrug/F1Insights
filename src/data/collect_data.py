@@ -89,10 +89,8 @@ def populate_tire_matrix(year, races, tire_matrix):
                     baseline_time_ms = baseline_time.total_seconds() * 1000
                     race_points = driver_points.get(driver, 0)
 
-                    starting_position = starting_positions.get(driver)
-                    if starting_position is None:
-                        print("Error - No starting position data")
                     finish_position = finish_positions.get(driver, 1 + max(finish_positions.values()))
+                    starting_position = starting_positions.get(driver)
 
                     stint_records.append({
                         'Driver': driver,

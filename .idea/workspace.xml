@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="512f1de3-3b84-4aa1-ad62-075b682ea220" name="Changes" comment="Improve data collection function">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/analysis/best_driver.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analysis/rank_drivers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/analysis/rank_drivers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analysis/rank_drivers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/collect_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/collect_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
@@ -272,23 +272,18 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/analysis/rank_drivers.py</url>
-          <line>180</line>
+          <line>186</line>
           <option name="timeStamp" value="296" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/analysis/rank_drivers.py</url>
-          <line>183</line>
+          <line>189</line>
           <option name="timeStamp" value="298" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/analysis/rank_drivers.py</url>
-          <line>123</line>
-          <option name="timeStamp" value="304" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/main.py</url>
-          <line>64</line>
-          <option name="timeStamp" value="317" />
+          <url>file://$PROJECT_DIR$/src/data/collect_data.py</url>
+          <line>91</line>
+          <option name="timeStamp" value="318" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
