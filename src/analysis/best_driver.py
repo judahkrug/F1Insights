@@ -13,7 +13,8 @@ def analyze_best_driver(tire_matrix, weighted=True):
         'DegradationPct': 'mean',  # Lower is better
         'LapTime': 'mean',  # Lower is better
         'PositionsGained': 'sum',  # Higher is better
-        'Stint': 'count'
+        'Stint': 'count',
+        'FinishPosition': 'mean'  # Lower is better
     }).reset_index()
 
     # Calculate races participated
@@ -33,36 +34,33 @@ def analyze_best_driver(tire_matrix, weighted=True):
     # Calculate tire management score (inverse of degradation - lower degradation is better)
     driver_stats['TireManagementScore'] = -1 * driver_stats['SmoothedDeg']
 
-    # Normalize all metrics to 0-1 scale
-    features_to_normalize = [
-        'PointsPerRace',
-        'PositionsGainedPerRace',
-        'TireManagementScore'
-    ]
-
     scaler = MinMaxScaler()
 
     # For lap time, we need to invert the scaling (faster lap times are better)
     driver_stats['LapTime_Normalized'] = -1 * scaler.fit_transform(
         driver_stats[['LapTime']]
     )
+    driver_stats['FinishPosition_Normalized'] = -1 * scaler.fit_transform(
+        driver_stats[['FinishPosition']]
+    )
 
     # Normalize other metrics
     normalized_features = pd.DataFrame(
-        scaler.fit_transform(driver_stats[features_to_normalize]),
-        columns=[f"{col}_Normalized" for col in features_to_normalize]
+        scaler.fit_transform(driver_stats[['PointsPerRace', 'PositionsGainedPerRace', 'TireManagementScore']]),
+        columns=[f"{col}_Normalized" for col in ['PointsPerRace', 'PositionsGainedPerRace', 'TireManagementScore']]
     )
 
     # Add normalized features to driver stats
-    for i, col in enumerate(features_to_normalize):
+    for col in ['PointsPerRace', 'PositionsGainedPerRace', 'TireManagementScore']:
         driver_stats[f"{col}_Normalized"] = normalized_features[f"{col}_Normalized"]
+
 
     # Apply weights to different metrics if weighted is True
     if weighted:
         weights = {
-            'PointsPerRace_Normalized': 0.4,  # Race points are most important
-            'TireManagementScore_Normalized': 0.25,  # Tire management is critical
-            'LapTime_Normalized': 0.25,  # Raw pace is important
+            'PointsPerRace_Normalized': 0.4,  # Race points are important
+            'TireManagementScore_Normalized': 0.3,  # Tire management is critical
+            'FinishPosition_Normalized': 0.2,  # Finishing position is important
             'PositionsGainedPerRace_Normalized': 0.1  # Positions gained shows overtaking ability
         }
     else:
@@ -70,7 +68,7 @@ def analyze_best_driver(tire_matrix, weighted=True):
         weights = {col: 1 / 4 for col in [
             'PointsPerRace_Normalized',
             'TireManagementScore_Normalized',
-            'LapTime_Normalized',
+            'FinishPosition_Normalized',
             'PositionsGainedPerRace_Normalized'
         ]}
 
@@ -110,6 +108,15 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         plt.tight_layout()
         plt.show()
 
+        # Average Finish Position
+        plt.figure(figsize=(12, 8))
+        sns.barplot(x='FinishPosition', y='Driver', data=top_drivers)
+        plt.title(f'Top {top_n} Drivers by Average Finish Position (Lower is Better)')
+        plt.xlabel('Average Finish Position')
+        plt.ylabel('Driver')
+        plt.tight_layout()
+        plt.show()
+
         # Tire management
         plt.figure(figsize=(12, 8))
         sns.barplot(x='SmoothedDeg', y='Driver', data=top_drivers)
@@ -124,14 +131,14 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         metrics = [
             'PointsPerRace_Normalized',
             'TireManagementScore_Normalized',
-            'LapTime_Normalized',
+            'FinishPosition_Normalized',
             'PositionsGainedPerRace_Normalized'
         ]
 
         metric_labels = [
             'Points Per Race',
             'Tire Management',
-            'Lap Time',
+            'Finish Position',
             'Positions Gained'
         ]
 
