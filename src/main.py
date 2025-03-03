@@ -6,16 +6,18 @@ from src.analysis.train_model import train_and_evaluate_model
 from src.utils.helpers import enable_cache
 from src.data.prepare_features import prepare_features
 from src.config import collect_new_data, years, train_years, test_years, use_weights
+from pathlib import Path
 
 
 def main():
     enable_cache()
+    data_path = Path('data/processed/tire_metrics.csv')
 
     if collect_new_data:
         tire_matrix = collect_data(years)
-        tire_matrix.to_csv('data/processed/tire_metrics.csv', index=False)
+        tire_matrix.to_csv(data_path, index=False)
     else:
-        tire_matrix = pd.read_csv('data/processed/tire_metrics.csv')
+        tire_matrix = pd.read_csv(data_path)
 
     # Prepare features
     modeling_data = prepare_features(tire_matrix)

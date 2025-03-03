@@ -79,19 +79,19 @@ def calculate_baseline(stint_laps, valid_indices):
 
 def extract_sc_vsc_periods(track_status):
     sc_vsc_periods = []
-    sc_vsc_active = False
-    start_time = None
+    current_period = {"active": False, "start_time": None}
 
     for i, row in track_status.iterrows():
-        if 'SCDeployed' in row['Message'] or 'VSCDeployed' in row['Message']:
-            sc_vsc_active = True
-            start_time = row['Time']
-        elif 'AllClear' in row['Message'] and sc_vsc_active:
-            sc_vsc_active = False
-            sc_vsc_periods.append((start_time, row['Time']))
+        message = row['Message']
 
-    # If SC/VSC is still active at the end of the data
-    if sc_vsc_active and start_time is not None:
-        sc_vsc_periods.append((start_time, pd.Timedelta.max))
+        if any(flag in message for flag in ['SCDeployed', 'VSCDeployed']):
+            current_period = {"active": True, "start_time": row['Time']}
+        elif 'AllClear' in message and current_period["active"]:
+            sc_vsc_periods.append((current_period["start_time"], row['Time']))
+            current_period = {"active": False, "start_time": None}
+
+    # Handle still active SC/VSC at the end of the data
+    if current_period["active"]:
+        sc_vsc_periods.append((current_period["start_time"], pd.Timedelta.max))
 
     return sc_vsc_periods

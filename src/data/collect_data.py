@@ -1,14 +1,31 @@
 import pandas as pd
 
 from src.utils.helpers import extract_sc_vsc_periods, get_races, load_race, is_valid_lap, calculate_baseline
+from dataclasses import dataclass, fields
+
+
+@dataclass
+class TireRecord:
+    Driver: str
+    Race: str
+    Year: int
+    LapNumber: int
+    Stint: int
+    StintLapNumber: int
+    LapTime: float
+    Compound: str
+    BaselineTime: float
+    DegradationPct: float
+    SmoothedDeg: float
+    PositionsGained: int
+    RacePoints: float
+    StintLength: int
+    FinishPosition: int
+    StartingPosition: int
 
 
 def collect_data(years):
-    tire_matrix = pd.DataFrame(columns=[
-        'Driver', 'Race', 'Year', 'LapNumber', 'Stint', 'StintLapNumber', 'LapTime', 'Compound', 'BaselineTime',
-        'DegradationPct', 'SmoothedDeg', 'PositionsGained', 'RacePoints', 'StintLength', 'FinishPosition',
-        'StartingPosition'
-    ])
+    tire_matrix = pd.DataFrame(columns=[field.name for field in fields(TireRecord)])
 
     for year in years:
         races = get_races(year)
@@ -92,24 +109,24 @@ def populate_tire_matrix(year, races, tire_matrix):
                     finish_position = finish_positions.get(driver, 1 + max(finish_positions.values()))
                     starting_position = starting_positions.get(driver)
 
-                    stint_records.append({
-                        'Driver': driver,
-                        'Race': race[0],
-                        'Year': year,
-                        'LapNumber': stint_laps.LapNumber[index],
-                        'Stint': stint_num,
-                        'StintLapNumber': stint_lap_number,
-                        'LapTime': lap_time_ms,
-                        'Compound': stint_laps.Compound[index],
-                        'BaselineTime': baseline_time_ms,
-                        'DegradationPct': degradation_pcts[i],
-                        'SmoothedDeg': smoothed_deg[i],
-                        'PositionsGained': positions_gained,
-                        'RacePoints': race_points,
-                        'StintLength': stint_length,
-                        'FinishPosition': finish_position,
-                        'StartingPosition': starting_position
-                    })
+                    stint_records.append(TireRecord(
+                        Driver=driver,
+                        Race=race[0],
+                        Year=year,
+                        LapNumber=stint_laps.LapNumber[index],
+                        Stint=stint_num,
+                        StintLapNumber=stint_lap_number,
+                        LapTime=lap_time_ms,
+                        Compound=stint_laps.Compound[index],
+                        BaselineTime=baseline_time_ms,
+                        DegradationPct=degradation_pcts[i],
+                        SmoothedDeg=smoothed_deg[i],
+                        PositionsGained=positions_gained,
+                        RacePoints=race_points,
+                        StintLength=stint_length,
+                        FinishPosition=finish_position,
+                        StartingPosition=starting_position
+                    ).__dict__)
 
                 # Add stint records to tire_matrix
                 stint_df = pd.DataFrame.from_records(stint_records)

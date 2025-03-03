@@ -68,30 +68,24 @@ def analyze_best_driver(tire_matrix, weighted=True):
         driver_stats[f"{col}_Normalized"] = normalized_features[f"{col}_Normalized"]
 
     # Apply weights to different metrics if weighted is True
-    if weighted:
-        weights = {
-            'PointsPerRace_Normalized': points_per_race_weight,
-            'TireManagementScore_Normalized': tire_management_score_weight,
-            'StartingPosition_Normalized': starting_position_weight,
-            'FinishPosition_Normalized': finish_position_weight,
-            'AvgPositionsGained_Normalized': avg_positions_gained_weight
-        }
-    else:
-        # Equal weights
-        weights = {col: 1 / 4 for col in [
-            'PointsPerRace_Normalized',
-            'TireManagementScore_Normalized',
-            'StartingPosition_Normalized',
-            'FinishPosition_Normalized',
-            'AvgPositionsGained_Normalized'
-        ]}
+    weights = {
+        'PointsPerRace_Normalized': points_per_race_weight,
+        'TireManagementScore_Normalized': tire_management_score_weight,
+        'StartingPosition_Normalized': starting_position_weight,
+        'FinishPosition_Normalized': finish_position_weight,
+        'AvgPositionsGained_Normalized': avg_positions_gained_weight
+    } if weighted else {col: 0.2 for col in [
+        'PointsPerRace_Normalized',
+        'TireManagementScore_Normalized',
+        'StartingPosition_Normalized',
+        'FinishPosition_Normalized',
+        'AvgPositionsGained_Normalized'
+    ]}
 
     # Calculate composite score
     driver_stats['CompositeScore'] = sum(
-        driver_stats[metric] * weight
-        for metric, weight in weights.items()
+        driver_stats[metric] * weight for metric, weight in weights.items()
     )
-
     # Rank drivers
     ranked_drivers = driver_stats.sort_values('CompositeScore', ascending=False).reset_index(drop=True)
     ranked_drivers.index = ranked_drivers.index + 1  # Start index at 1
