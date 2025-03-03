@@ -105,6 +105,7 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         plt.xlabel('Composite Performance Score')
         plt.ylabel('Driver')
         plt.tight_layout()
+        plt.savefig("src/resources/composite_scores.png")
         plt.show()
 
         # Points per race
@@ -115,6 +116,7 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         plt.xlabel('Points Per Race')
         plt.ylabel('Driver')
         plt.tight_layout()
+        plt.savefig("src/resources/points_per_race.png")
         plt.show()
 
         # Positions gained per race
@@ -125,6 +127,7 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         plt.xlabel('Positions Gained Per Race')
         plt.ylabel('Driver')
         plt.tight_layout()
+        plt.savefig("src/resources/positions_gained.png")
         plt.show()
 
         # Average Starting Position
@@ -135,6 +138,7 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         plt.xlabel('Average Starting Position')
         plt.ylabel('Driver')
         plt.tight_layout()
+        plt.savefig("src/resources/starting_position.png")
         plt.show()
 
         # Average Finish Position
@@ -145,6 +149,7 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         plt.xlabel('Average Finish Position')
         plt.ylabel('Driver')
         plt.tight_layout()
+        plt.savefig("src/resources/finish_position.png")
         plt.show()
 
         # Tire management
@@ -155,6 +160,7 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         plt.xlabel('Average Tire Degradation %')
         plt.ylabel('Driver')
         plt.tight_layout()
+        plt.savefig("src/resources/tire_degradation.png")
         plt.show()
 
     else:
@@ -222,4 +228,5 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
             axes[i].axis('off')
 
         plt.tight_layout()
+        plt.savefig("src/resources/radar_charts.png")
         plt.show()

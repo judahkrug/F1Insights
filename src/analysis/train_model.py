@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score, mean_absolute_error
+from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
 
 
@@ -93,4 +94,5 @@ def train_and_evaluate_model(train_data, test_data, predictors, target):
     plt.title(f'Actual vs Predicted {target} using {better_model}')
     plt.legend()
     plt.tight_layout()
+    plt.savefig(f"src/resources/{target}_{better_model.replace(' ', '_')}.png")
     plt.show()
