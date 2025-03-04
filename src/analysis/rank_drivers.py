@@ -39,13 +39,12 @@ def analyze_best_driver(tire_matrix, weighted=True):
     driver_stats = pd.merge(driver_stats, avg_finish_position_by_driver, on='Driver')
     driver_stats = pd.merge(driver_stats, avg_starting_position_by_driver, on='Driver')
 
-    # Remove drivers where RacesParticipated < 10
-    driver_stats = driver_stats[driver_stats['RacesParticipated'] >= 10].reset_index()
+    # Remove drivers where RacesParticipated < 20
+    driver_stats = driver_stats[driver_stats['RacesParticipated'] >= 20].reset_index()
 
     # Calculate new columns
     driver_stats['PointsPerRace'] = driver_stats['RacePoints'] / driver_stats['RacesParticipated']
     driver_stats['AvgPositionsGained'] = driver_stats['StartingPosition'] - driver_stats['FinishPosition']
-    driver_stats['TireManagementScore'] = -1 * driver_stats['SmoothedDeg']
 
     scaler = MinMaxScaler()
 
@@ -59,24 +58,24 @@ def analyze_best_driver(tire_matrix, weighted=True):
 
     # Normalize other metrics
     normalized_features = pd.DataFrame(
-        scaler.fit_transform(driver_stats[['PointsPerRace', 'AvgPositionsGained', 'TireManagementScore']]),
-        columns=[f"{col}_Normalized" for col in ['PointsPerRace', 'AvgPositionsGained', 'TireManagementScore']]
+        scaler.fit_transform(driver_stats[['PointsPerRace', 'AvgPositionsGained', 'SmoothedDeg']]),
+        columns=[f"{col}_Normalized" for col in ['PointsPerRace', 'AvgPositionsGained', 'SmoothedDeg']]
     )
 
     # Add normalized features to driver stats
-    for col in ['PointsPerRace', 'AvgPositionsGained', 'TireManagementScore']:
+    for col in ['PointsPerRace', 'AvgPositionsGained', 'SmoothedDeg']:
         driver_stats[f"{col}_Normalized"] = normalized_features[f"{col}_Normalized"]
 
     # Apply weights to different metrics if weighted is True
     weights = {
         'PointsPerRace_Normalized': points_per_race_weight,
-        'TireManagementScore_Normalized': tire_management_score_weight,
+        'SmoothedDeg_Normalized': tire_management_score_weight,
         'StartingPosition_Normalized': starting_position_weight,
         'FinishPosition_Normalized': finish_position_weight,
         'AvgPositionsGained_Normalized': avg_positions_gained_weight
     } if weighted else {col: 0.2 for col in [
         'PointsPerRace_Normalized',
-        'TireManagementScore_Normalized',
+        'SmoothedDeg_Normalized',
         'StartingPosition_Normalized',
         'FinishPosition_Normalized',
         'AvgPositionsGained_Normalized'
@@ -167,7 +166,7 @@ def plot_driver_rankings(ranked_drivers, top_n=10, radar=False):
         # Create radar charts for top drivers
         metrics = [
             'PointsPerRace_Normalized',
-            'TireManagementScore_Normalized',
+            'SmoothedDeg_Normalized',
             'StartingPosition_Normalized',
             'FinishPosition_Normalized',
             'AvgPositionsGained_Normalized'

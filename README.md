@@ -148,8 +148,8 @@ F1Insights/
 
 ## Insights
 
-- **Verstappen dominance**: Max Verstappen (VER) leads the rankings with the highest composite score and points per race
-- **Tire management**: Lewis Hamilton (HAM) shows excellent tire management with low degradation
+- **Verstappen dominance**: Max Verstappen leads the rankings with the highest composite score. This is due to him leading in Points Per Race, Average Starting Position, and Average Finishing Poisition
+- **Tire management**: Lewis Hamilton shows excellent tire management with low degradation
 - **Position gains**: Hamilton also excels at gaining positions during races
 - **Model findings**: Random Forest models demonstrate strong training performance but show signs of overfitting
   compared to Ridge Regression

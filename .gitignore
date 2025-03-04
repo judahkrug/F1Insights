@@ -1,5 +1,5 @@
 /cache/
 /.DS_Store
 /data/
-.gitignore
-./.idea/
+/old/
+.idea
