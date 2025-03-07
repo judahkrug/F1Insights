@@ -1,14 +1,14 @@
-# F1Insights
+# F1Insights: Machine Learning-Powered Formula 1 Performance Analysis
 
-F1Insights is a machine learning project focused on analyzing Formula 1 racing data to identify performance trends,
-driver rankings, and tire degradation patterns.
+> Discover the best F1 drivers through data-driven analysis of tire management, qualifying performance, and race
+> execution.
 
 ## Overview
 
 This project combines data collection from Formula 1 races with machine learning techniques to:
 
 - Rank drivers based on multiple performance metrics
-- Predict stint length and race points based on tire degradation and other factors
+- Predict stint length and race points based on tire degradation among other factors
 - Visualize key performance indicators for top drivers
 
 ## Tech Stack
@@ -31,9 +31,9 @@ This project combines data collection from Formula 1 races with machine learning
 
 ### Performance Analysis
 
-- Calculates composite driver scores based on weighted metrics:
-    - Points per race (30%)
+- Calculates composite driver scores based on adjustable weighted metrics:
     - Tire management (30%)
+    - Points per race (30%)
     - Starting position (20%)
     - Finish position (20%)
 
@@ -148,9 +148,10 @@ F1Insights/
 
 ## Insights
 
-- **Verstappen dominance**: Max Verstappen leads the rankings with the highest composite score. This is due to him leading in Points Per Race, Average Starting Position, and Average Finishing Poisition
+- **Verstappen dominance**: Max Verstappen leads the rankings with the highest composite score (.75)
 - **Tire management**: Drivers that are often near the back of the pack excel in minimizing Tire Degradation
-- **Position gains**: Despite scoring highly in Average Starting Position, Hamilton also performs well in Average Positions Gained during races
+- **Hamilton's race day skills**: Despite high qualifying position (2nd), Hamilton ranks 4th in Positions Gained per
+  race (+0.61)
 - **Model findings**: Random Forest models demonstrate strong training performance but show signs of overfitting
   compared to Ridge Regression
 
@@ -160,3 +161,4 @@ F1Insights/
 - Add metric for ability to race under pressure
 - Implement predictive models for race outcome
 - Explore deep learning models for lap time prediction
+- Include qualifying data to further rule out race-day variables
