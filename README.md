@@ -79,14 +79,18 @@ Test MAE: 5.338
 ## Driver Rankings
 
 ```
-Top 20 Drivers (Overall Performance):
+Top 10 Drivers (Overall Performance):
    Driver  CompositeScore  PointsPerRace  DegradationPct  AvgPositionsGained
-1     VER        0.751312      18.951456       -0.489470           -0.077670
-2     HAM        0.656032      13.549020       -0.766235            0.607843
-3     LEC        0.577596      10.580000       -0.714852           -0.570000
-4     SAI        0.549011       9.649485       -0.697656           -0.020619
-5     PER        0.529832      10.040000       -0.556757           -0.140000
-6     NOR        0.520922       8.663462       -0.738479           -0.201923
+1     VER        0.885443      18.951456       -0.489470           -0.077670
+2     HAM        0.669411      13.549020       -0.766235            0.607843
+3     PER        0.630665      10.040000       -0.556757           -0.140000
+4     LEC        0.605102      10.580000       -0.714852           -0.570000
+5     SAI        0.603717       9.649485       -0.697656           -0.020619
+6     NOR        0.557158       8.663462       -0.738479           -0.201923
+7     PIA        0.547659       7.711111       -0.620464           -0.133333
+8     RUS        0.413514       6.238095       -0.843918           -0.847619
+9     BOT        0.392186       4.844660       -0.740137           -1.563107
+10    HUL        0.376310       1.061224       -0.387614           -1.816327
 ```
 
 ## Visualizations
@@ -148,7 +152,7 @@ F1Insights/
 
 ## Insights
 
-- **Verstappen dominance**: Max Verstappen leads the rankings with the highest composite score (.75)
+- **Verstappen dominance**: Max Verstappen leads the rankings with the highest composite score (.88)
 - **Tire management**: Drivers that are often near the back of the pack excel in minimizing Tire Degradation
 - **Hamilton's race day skills**: Despite high qualifying position (2nd), Hamilton ranks 4th in Positions Gained per
   race (+0.61)
