@@ -1,59 +1,57 @@
 # F1Insights: Machine Learning-Powered Formula 1 Performance Analysis
 
-> Discover the best F1 drivers through data-driven analysis of tire management, qualifying performance, and race
-> execution.
+> Discover driver performance patterns through advanced machine learning and comprehensive data analysis
 
 ## Overview
 
-This project combines data collection from Formula 1 races with machine learning techniques to:
+This project leverages machine learning models to analyze Formula 1 performance data, with a focus on:
 
-- Rank drivers based on multiple performance metrics
-- Predict stint length and race points based on tire degradation among other factors
-- Visualize key performance indicators for top drivers
+- Developing predictive models for race outcomes and tire strategy
+- Creating a composite driver ranking system based on multiple weighted metrics
+- Extracting insights from tire degradation patterns across different racing conditions
+- Identifying key performance indicators that distinguish top drivers
 
 ## Tech Stack
 
 - **Python**: Primary programming language
-- **NumPy**: Used for numerical operations and calculations
-- **pandas**: Used for data manipulation and analysis
-- **scikit-learn**: Implemented Ridge Regression and Random Forest models
-- **matplotlib/seaborn**: For data visualization
-- **fastf1**: API for accessing Formula 1 race data
+- **NumPy**: Numerical operations and calculations
+- **pandas**: Data manipulation and analysis
+- **scikit-learn**: Implementation of Ridge Regression and Random Forest models with hyperparameter tuning
+- **matplotlib/seaborn**: Data visualization and statistical plotting
+- **fastf1**: API for accessing official Formula 1 telemetry and race data
 
-## Features
+## Machine Learning Approach
 
-### Data Collection and Processing
+### Model Architecture
 
-- Collects race data for 2020-2024 seasons
-- Processes tire degradation metrics
-- Tracks driver performance across multiple races
-- Filters out invalid laps (pit stops, safety cars)
+The project implements two complementary machine learning approaches:
 
-### Performance Analysis
+- **Ridge Regression**: For interpretable linear relationships and baseline performance
+- **Random Forest**: For capturing non-linear patterns in driver performance
 
-- Calculates composite driver scores based on adjustable weighted metrics:
-    - Tire management (30%)
-    - Points per race (30%)
-    - Starting position (20%)
-    - Finish position (20%)
+### Prediction Targets
 
-### Machine Learning Models
+- **Stint Length Prediction**: Predicting optimal pit stop timing based on tire degradation
+- **Race Points Prediction**: Estimating driver points based on performance metrics
 
-- Predicts stint length and race points based on tire degradation and driving style
-- Compares Ridge Regression and Random Forest models
+### Feature Engineering
 
-## Model Performance
+- **Tire degradation features**: Compound-specific degradation patterns
+- **Driver performance metrics**: Relative performance, positions gained
+- **Technical indicators**: Smoothed degradation, lap time statistics
+
+## Model Performance Results
 
 ### Stint Length Prediction
 
 ```
-Random Forest Test Performance (target = StintLength):
+Random Forest Performance:
 Train R² Score: 0.942
 Test R² Score: 0.423
 Train MAE: 1.848
 Test MAE: 6.730
 
-Ridge Regression Test Performance (target = StintLength):
+Ridge Regression Performance:
 Train R² Score: 0.397
 Test R² Score: 0.329
 Train MAE: 6.432
@@ -63,20 +61,52 @@ Test MAE: 7.466
 ### Race Points Prediction
 
 ```
-Random Forest Test Performance (target = RacePoints):
+Random Forest Performance:
 Train R² Score: 0.913
 Test R² Score: 0.307
 Train MAE: 1.550
 Test MAE: 4.448
 
-Ridge Regression Test Performance (target = RacePoints):
+Ridge Regression Performance:
 Train R² Score: 0.144
 Test R² Score: 0.155
 Train MAE: 5.455
 Test MAE: 5.338
 ```
 
-## Driver Rankings
+### Key ML Insights
+
+- **Model Comparison**: Random Forest models achieve better training performance but show signs of overfitting compared
+  to the more consistent Ridge Regression models
+- **Feature Importance**: Tire degradation metrics and lap time consistency emerged as the most significant predictors
+- **Generalization Challenges**: The significant gap between training and testing performance highlights the challenge
+  of generalizing across different F1 seasons
+- **Prediction Accuracy**: Ridge regression results suggested more stable performance on unseen data despite lower
+  training scores
+
+## Performance Analysis Framework
+
+### Data Collection and Processing
+
+- Comprehensive collection of race data across 2020-2024 F1 seasons
+- Data cleaning to filter out invalid laps (pit stops, safety car periods)
+- Feature engineering to capture driver-specific patterns and race dynamics
+- Statistical normalization of metrics for fair cross-season comparisons
+
+### Weighted Performance Metrics
+
+The composite driver ranking is based on a configurable weighted system:
+
+- Tire management (30%)
+- Points per race (30%)
+- Starting position (20%)
+- Finish position (20%)
+
+This weighting system is implemented as an adjustable parameter set in `config.py`.
+
+## Key Findings
+
+### Driver Rankings
 
 ```
 Top 10 Drivers (Overall Performance):
@@ -92,6 +122,17 @@ Top 10 Drivers (Overall Performance):
 9     BOT        0.392186       4.844660       -0.740137           -1.563107
 10    HUL        0.376310       1.061224       -0.387614           -1.816327
 ```
+
+### Statistical Insights
+
+- **Verstappen's dominance**: Max Verstappen leads the rankings with the highest composite score (.88), driven by
+  superior points per race
+- **Tire management specialists**: Data revealed that drivers often at the back of the pack excel in minimizing tire
+  degradation
+- **Hamilton's race day skills**: Despite high qualifying positions (2nd), Hamilton ranks 4th in positions gained per
+  race (+0.61)
+- **Model findings**: Random Forest models demonstrate strong training performance but show signs of overfitting
+  compared to Ridge Regression generalizing across different seasons and regulations
 
 ## Visualizations
 
@@ -142,7 +183,7 @@ F1Insights/
 
 2. Configure settings in `src/config.py`:
     - Set `collect_new_data` to True to fetch new race data
-    - Adjust model training years
+    - Adjust model training/testing years
     - Modify metric weights for driver rankings
 
 3. Run the analysis:
@@ -150,19 +191,11 @@ F1Insights/
    python src/main.py
    ```
 
-## Insights
+## Future ML Work
 
-- **Verstappen dominance**: Max Verstappen leads the rankings with the highest composite score (.88)
-- **Tire management**: Drivers that are often near the back of the pack excel in minimizing Tire Degradation
-- **Hamilton's race day skills**: Despite high qualifying position (2nd), Hamilton ranks 4th in Positions Gained per
-  race (+0.61)
-- **Model findings**: Random Forest models demonstrate strong training performance but show signs of overfitting
-  compared to Ridge Regression
+- Implement time-series forecasting for lap-by-lap prediction
+- Add weather data as a feature to improve prediction accuracy in changing conditions
+- Develop a race simulation model to predict race outcomes based on qualifying results
+- Create driver-specific models to capture individual driving styles and adaptability
+- Integrate track-specific features to account for circuit characteristics
 
-## Future Work
-
-- Incorporate weather data for more accurate predictions
-- Add metric for ability to race under pressure
-- Implement predictive models for race outcome
-- Explore deep learning models for lap time prediction
-- Include qualifying data to further rule out race-day variables
