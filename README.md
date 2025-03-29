@@ -7,7 +7,7 @@
 This project leverages machine learning models to analyze Formula 1 performance data, with a focus on:
 
 - Developing predictive models for race outcomes and tire strategy
-- Creating a composite driver ranking system based on multiple weighted metrics
+- Creating a composite driver ranking system based on weighted metrics
 - Extracting insights from tire degradation patterns across different racing conditions
 - Identifying key performance indicators that distinguish top drivers
 
@@ -16,7 +16,7 @@ This project leverages machine learning models to analyze Formula 1 performance 
 - **Python**: Primary programming language
 - **NumPy**: Numerical operations and calculations
 - **pandas**: Data manipulation and analysis
-- **scikit-learn**: Implementation of Ridge Regression and Random Forest models with hyperparameter tuning
+- **scikit-learn**: Ridge Regression and Random Forest models with hyperparameter tuning
 - **matplotlib/seaborn**: Data visualization and statistical plotting
 - **fastf1**: API for accessing official Formula 1 telemetry and race data
 
@@ -77,7 +77,7 @@ Test MAE: 5.338
 ### Key ML Insights
 
 - **Model Comparison**: Random Forest models achieve better training performance but show signs of overfitting compared
-  to the more consistent Ridge Regression models
+  to the Ridge Regression models
 - **Feature Importance**: Tire degradation metrics and lap time consistency emerged as the most significant predictors
 - **Generalization Challenges**: The significant gap between training and testing performance highlights the challenge
   of generalizing across different F1 seasons
